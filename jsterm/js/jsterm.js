@@ -293,7 +293,7 @@
          };
 
          if (entry.type == 'dir' || entry.type == 'link') {
-            return typeLink('ls -l ' + str, entry.name);
+            return typeLink('cd ' + str, entry.name);
          } else if (entry.type == 'text') {
             return typeLink('cat ' + str, entry.name);
          } else if (entry.type == 'img') {
@@ -497,17 +497,13 @@
    }
 
    var term = Object.create(Terminal);
-   term.init(CONFIG, 'json/myfs.json', COMMANDS, function() {
+   term.init(CONFIG, 'jsterm/json/content.json', COMMANDS, function() {
       term.enqueue('login')
-          .enqueue('clark')
-          .enqueue('******')
+          .enqueue(leyente)
+          .enqueue('**********')
           .enqueue('cat README')
           .enqueue('help')
-          .enqueue('cd projects')
           .enqueue('ls -l')
-          .enqueue('cd ..')
-          .enqueue('tree')
-          .enqueue('ls')
           .begin();
    });
 
