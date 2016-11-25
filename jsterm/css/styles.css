@@ -15,59 +15,67 @@ body {
     background: black;
 }
 
-.jsterm a {
+#jsterm a {
     color: #E0E0E0;
     text-decoration: none;
 }
 
-.jsterm a:hover {
+#jsterm a:hover {
     text-decoration: underline;
 }
 
-div.jsterm {
+div#jsterm {
     background: black;
     font-family: monospace;
-    font-size: 16px;
+    font-size: 1.5em;
     color: #E0E0E0;
-    margin-bottom: 20px;
+    margin-bottom: 1em;
     white-space: pre-wrap;
 }
 
-div.jsterm .host, div.jsterm .host a {
+div#jsterm .host, div#jsterm .host a {
     color: #5555ff;
     font-weight: bold;
 }
 
-div.jsterm .user, div.jsterm .user a {
+div#jsterm .user, div#jsterm .user a {
     color: #ff5555;
     font-weight: bold;
 }
 
-div.jsterm .cwd, div.jsterm .cwd a {
+div#jsterm .cwd, div#jsterm .cwd a {
     color: #ffff55;
     font-weight: bold;
 }
 
-div.jsterm .dir, div.jsterm .dir a {
+div#jsterm .dir, div#jsterm .dir a {
     color: #5555ff;
     font-weight: bold;
 }
 
-div.jsterm .link, div.jsterm .link a {
+div#jsterm .link, div#jsterm .link a {
     color: #5555ff;
     font-weight: bold;
 }
 
-div.jsterm .exec, div.jsterm .exec a {
+div#jsterm .exec, div#jsterm .exec a {
     color: #55ff55;
     font-weight: bold;
 }
 
-div.jsterm .img, div.jsterm .img a {
+div#jsterm .img, div#jsterm .img a {
     color: #ff55ff;
     font-weight: bold;
 }
 
 #blinker {
     line-height: .9em;
+}
+
+#text-field {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1em;
 }
