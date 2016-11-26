@@ -80,6 +80,31 @@ div#jsterm .img, div#jsterm .img a {
     font-size: 1.5em;
 }
 
+#help {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 1.5em;
+    padding: .25em;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#help p {
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    color: black;
+}
+
 .mobile {
     margin-bottom: 3em !important;
 }

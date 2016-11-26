@@ -15,33 +15,57 @@
 var COMMANDS = COMMANDS || {};
 
 COMMANDS.cat = function(argv, cb) {
-    var filenames = this._terminal.parseArgs(argv).filenames,
-        stdout;
+    //  Obtiene los argumentos
+    var filenames = this._terminal.parseArgs(argv).filenames;
 
+    //  Hace scroll hasta el fondo
     this._terminal.scroll();
+
+    //  Si no se ingreso ningún argumento, se recrea el comportamiento real del cat
     if (!filenames.length) {
         this._terminal.returnHandler = function() {
-            stdout = this.stdout();
+            //  Obtiene lo ingresado
+            var stdout = this.stdout();
+
+            //  En el primer caso será nulo, así que inicia el cuelgue creándose un stdout vacío
             if (!stdout)
                 return;
+
+            //  A partir de la segunda vez se repetirá lo que se ingrese una vez colgada
             stdout.innerHTML += '<br>' + stdout.innerHTML + '<br>';
+
+            //  Hace scroll hasta el fondo
             this.scroll();
+
+            //  Crea un nuevo ingreo
             this.newStdout();
         }.bind(this._terminal);
+
+        //  Termina el comando
         return;
     }
+
+    //  Si se ingreso algún argumento, busca leer el archivo
     filenames.forEach(function(filename, i) {
+        // Obtiene el contenido del argumento buscado
         var entry = this._terminal.getEntry(filename);
 
+        //  Si el valor es nulo
         if (!entry)
             this._terminal.write('cat: ' + filename + ': No such file or directory');
+        //  Si se trata de una carpeta
         else if (entry.type === 'dir')
             this._terminal.write('cat: ' + filename + ': Is a directory.');
+        //  Si se trata de un archivo existente, muestra su contenido
         else
             this._terminal.write(entry.contents);
+
+        //  Crea un salto de línea si no es el último argumento ingresado
         if (i !== filenames.length - 1)
             this._terminal.write('<br>');
     }, this);
+
+    //  Llama a un bound()
     cb();
 }
 
@@ -93,16 +117,30 @@ COMMANDS.gimp = function(argv, cb) {
 }
 
 COMMANDS.help = function(argv, cb) {
-    this._terminal.write(ayuda);
+    //  Escribe la primera parte de la ayuda
+    this._terminal.write(ayuda1);
+
+    //  En este conjunto se pondrán los comandos válidos
     var cmd = [];
+
+    //  Obtiene los comandos y agrega todos excepto el comando «_terminal»
     for (var c in this._terminal.commands)
         if (this._terminal.commands.hasOwnProperty(c) && !c.startswith('_'))
             cmd.push(c);
+
+    //  Ordena los comando en orden alfabético
     cmd.sort();
+
+    //  Escribe en la terminal cada uno de los comandos más su descripción
     for (var i = 0; i < cmd.length; i++) {
         var tipo = typeof cmd[i];
         this._terminal.write('-' + cmd[i] + ': ' + comandos[cmd[i]] + '<br />');
     }
+
+    //  Escribe la segunda parte de la ayuda
+    this._terminal.write(ayuda2);
+
+    //  Llama a un bound()
     cb();
 }
 

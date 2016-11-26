@@ -149,26 +149,34 @@
             return '~' + dirStr;
         },
 
+        //  Obtiene el contenido del fichero a utilizar
         getEntry: function(path) {
             var entry,
                 parts;
 
+            //  Si lo ingresado no es nada, regresa nulo
             if (!path)
                 return null;
 
-            path = path.replace(/^\s+/, '').replace(/\s+$/, '');
+            //  Si una vez eliminado los espacios al inicio y al final de la línea es nada, regresa nulo
+            path = path.trim();
             if (!path.length)
                 return null;
 
+            //  Indica el directorio actual
             entry = this.cwd;
+
             if (path[0] == '~') {
                 entry = this.fs;
                 path = path.substring(1, path.length);
+                console.log(entry);
+                console.log(path);
             }
 
             parts = path.split('/').filter(function(x) {
                 return x;
             });
+
             for (var i = 0; i < parts.length; ++i) {
                 entry = this._dirNamed(parts[i], entry.contents);
                 if (!entry)
@@ -265,6 +273,7 @@
             return this;
         },
 
+        //  Hace scroll hasta el fondo
         scroll: function() {
             window.scrollTo(0, document.body.scrollHeight);
         },
@@ -294,10 +303,12 @@
                 '</span>');
         },
 
+        //  Obtiene lo ingresado
         stdout: function() {
             return this.div.querySelector('#stdout');
         },
 
+        // Crea un nuevo ingreso a partir de lo ingresado con anterioridad
         newStdout: function() {
             var stdout = this.stdout(),
                 newstdout = document.createElement('span');
@@ -543,9 +554,8 @@
 
     //  Si es un dispositivo móvil, se agrega un input y unos listeners
     if (mobile) {
+        //  Creación del input
         var input = document.createElement("input");
-
-        //  Configuración del input
         input.type = "text";
         input.id = "text-field";
         input.value = "";
@@ -557,11 +567,11 @@
         document.body.appendChild(input);
 
         //  Adición de listeners
-        input.addEventListener("focus", function() {
+        input.addEventListener("focus", function () {
             onFocus = true;
         });
 
-        input.addEventListener("blur", function() {
+        input.addEventListener("blur", function () {
             onFocus = false;
         });
 
@@ -572,4 +582,14 @@
             });
         }
     }
+
+    //  Creación del botón de ayuda
+    var help = document.createElement("div");
+    help.id = "help";
+    help.innerHTML = "<p>" + ayudaBoton + "</p>";
+    document.body.appendChild(help);
+
+    help.addEventListener("click", function () {
+        typeCommand('help');
+    })
 })();

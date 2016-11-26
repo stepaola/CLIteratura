@@ -24,7 +24,7 @@
     },{
         "name": "01-casa_tomada-julio_cortazar",
         "type": "dir",
-        "description" : "Aprende a moverte entre ficheros.",
+        "description" : "Aprende a moverte entre ficheros y ver sus contenidos.",
         "contents": [{
             "name": "archivo",
             "type": "text",
