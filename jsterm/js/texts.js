@@ -10,5 +10,6 @@ var leyente = 'leyente',
         help : "muestra esta ayuda.",
         login : "cambia el nombre de usuario.",
         ls : "muestra una lista de los ficheros que contiene un directorio.",
-        sudo : "ejecuta un comando con privilegios de administrador."
+        sudo : "ejecuta un comando con privilegios de administrador.",
+        tree : "muestra una estructura de árbol de los ficheros que contiene un directorio."
     }

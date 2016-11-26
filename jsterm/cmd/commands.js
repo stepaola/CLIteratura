@@ -61,6 +61,69 @@ COMMANDS.cd = function(argv, cb) {
     cb();
 }
 
+COMMANDS.clear = function(argv, cb) {
+    this._terminal.div.innerHTML = '';
+    cb();
+}
+
+COMMANDS.gimp = function(argv, cb) {
+    var filename = this._terminal.parseArgs(argv).filenames[0],
+        entry,
+        imgs;
+
+    if (!filename) {
+        this._terminal.write('gimp: please specify an image file.');
+        cb();
+        return;
+    }
+
+    entry = this._terminal.getEntry(filename);
+    if (!entry || entry.type !== 'img') {
+        this._terminal.write('gimp: file ' + filename + ' is not an image file.');
+    } else {
+        this._terminal.write('<img src="jsterm' + entry.contents + '"/>');
+        imgs = this._terminal.div.getElementsByTagName('img');
+        imgs[imgs.length - 1].onload = function() {
+            this.scroll();
+        }.bind(this._terminal);
+        if ('caption' in entry)
+            this._terminal.write('<br/>' + entry.caption);
+    }
+    cb();
+}
+
+COMMANDS.help = function(argv, cb) {
+    this._terminal.write(ayuda);
+    var cmd = [];
+    for (var c in this._terminal.commands)
+        if (this._terminal.commands.hasOwnProperty(c) && !c.startswith('_'))
+            cmd.push(c);
+    cmd.sort();
+    for (var i = 0; i < cmd.length; i++) {
+        var tipo = typeof cmd[i];
+        this._terminal.write('-' + cmd[i] + ': ' + comandos[cmd[i]] + '<br />');
+    }
+    cb();
+}
+
+COMMANDS.login = function(argv, cb) {
+    this._terminal.returnHandler = function() {
+        var username = this.stdout().innerHTML;
+
+        this.scroll();
+        if (username)
+            this.config.username = username;
+        this.write('<br>Password: ');
+        this.scroll();
+        this.returnHandler = function() {
+            cb();
+        }
+    }.bind(this._terminal);
+    this._terminal.write('Username: ');
+    this._terminal.newStdout();
+    this._terminal.scroll();
+}
+
 COMMANDS.ls = function(argv, cb) {
     var result = this._terminal.parseArgs(argv),
         args = result.args,
@@ -102,108 +165,45 @@ COMMANDS.ls = function(argv, cb) {
     cb();
 }
 
-COMMANDS.gimp = function(argv, cb) {
-    var filename = this._terminal.parseArgs(argv).filenames[0],
-        entry,
-        imgs;
-
-    if (!filename) {
-        this._terminal.write('gimp: please specify an image file.');
-        cb();
-        return;
-    }
-
-    entry = this._terminal.getEntry(filename);
-    if (!entry || entry.type !== 'img') {
-        this._terminal.write('gimp: file ' + filename + ' is not an image file.');
-    } else {
-        this._terminal.write('<img src="jsterm' + entry.contents + '"/>');
-        imgs = this._terminal.div.getElementsByTagName('img');
-        imgs[imgs.length - 1].onload = function() {
-            this.scroll();
-        }.bind(this._terminal);
-        if ('caption' in entry)
-            this._terminal.write('<br/>' + entry.caption);
-    }
-    cb();
-}
-
-COMMANDS.clear = function(argv, cb) {
-    this._terminal.div.innerHTML = '';
-    cb();
-}
-
-COMMANDS.sudo = function(argv, cb) {
-    var count = 0;
-    this._terminal.returnHandler = function() {
-        if (++count < 3) {
-            this.write('<br/>Sorry, try again.<br/>');
-            this.write('[sudo] password for ' + this.config.username + ': ');
-            this.scroll();
-        } else {
-            this.write('<br/>sudo: 3 incorrect password attempts');
-            cb();
-        }
-    }.bind(this._terminal);
-    this._terminal.write('[sudo] password for ' + this._terminal.config.username + ': ');
-    this._terminal.scroll();
-}
-
-COMMANDS.login = function(argv, cb) {
-    this._terminal.returnHandler = function() {
-        var username = this.stdout().innerHTML;
-
-        this.scroll();
-        if (username)
-            this.config.username = username;
-        this.write('<br>Password: ');
-        this.scroll();
-        this.returnHandler = function() {
-            cb();
-        }
-    }.bind(this._terminal);
-    this._terminal.write('Username: ');
-    this._terminal.newStdout();
-    this._terminal.scroll();
-}
-
-COMMANDS.help = function(argv, cb) {
-    this._terminal.write(ayuda);
-    var cmd = [];
-    for (var c in this._terminal.commands)
-        if (this._terminal.commands.hasOwnProperty(c) && !c.startswith('_'))
-            cmd.push(c);
-    cmd.sort();
-    for (var i = 0; i < cmd.length; i++) {
-        var tipo = typeof cmd[i];
-        this._terminal.write('-' + cmd[i] + ': ' + comandos[cmd[i]] + '<br />');
-    }
-    cb();
-}
-
-// COMMANDS.tree = function(argv, cb) {
-//     var term = this._terminal,
-//         home;
-//
-//     function writeTree(dir, level) {
-//         dir.contents.forEach(function(entry) {
-//             var str = '';
-//
-//             if (entry.name.startswith('.'))
-//                 return;
-//             for (var i = 0; i < level; i++)
-//                 str += '|  ';
-//             str += '|&mdash;&mdash;';
-//             term.write(str);
-//             term.writeLink(entry, term.dirString(dir) + '/' + entry.name);
-//             term.write('<br>');
-//             if (entry.type === 'dir')
-//                 writeTree(entry, level + 1);
-//         });
-//     };
-//     home = this._terminal.getEntry('~');
-//     this._terminal.writeLink(home, '~');
-//     this._terminal.write('<br>');
-//     writeTree(home, 0);
-//     cb();
+// COMMANDS.sudo = function(argv, cb) {
+//     var count = 0;
+//     this._terminal.returnHandler = function() {
+//         if (++count < 3) {
+//             this.write('<br/>Sorry, try again.<br/>');
+//             this.write('[sudo] password for ' + this.config.username + ': ');
+//             this.scroll();
+//         } else {
+//             this.write('<br/>sudo: 3 incorrect password attempts');
+//             cb();
+//         }
+//     }.bind(this._terminal);
+//     this._terminal.write('[sudo] password for ' + this._terminal.config.username + ': ');
+//     this._terminal.scroll();
 // }
+
+COMMANDS.tree = function(argv, cb) {
+    var term = this._terminal,
+        home;
+
+    function writeTree(dir, level) {
+        dir.contents.forEach(function(entry) {
+            var str = '';
+
+            if (entry.name.startswith('.'))
+                return;
+            for (var i = 0; i < level; i++)
+                str += '|  ';
+            str += '|&mdash;&mdash;';
+            term.write(str);
+            term.writeLink(entry, term.dirString(dir) + '/' + entry.name);
+            term.write('<br>');
+            if (entry.type === 'dir')
+                writeTree(entry, level + 1);
+        });
+    };
+    home = this._terminal.getEntry('~');
+    this._terminal.writeLink(home, '~');
+    this._terminal.write('<br>');
+    writeTree(home, 0);
+    cb();
+}
