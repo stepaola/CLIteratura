@@ -13,9 +13,10 @@
 // limitations under the License.
 
 (function() {
-    //  Estas variables ayudarán para las versiones móbiles, la primera para ver si el input está en focus, la segunda para saber si estamos en un dispositivo móvil
+    //  Ayudará para las versiones móbiles para ver si el input está en focus y para detectar un dispositivo móvil
     var onFocus,
         mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
+        android = /Android/i.test(navigator.userAgent);
 
     if (typeof Object.create !== 'function') {
         Object.create = function(o) {
@@ -99,6 +100,17 @@
             this.div = document.createElement('div');
             this.div.id = ('jsterm');
             parentElement.appendChild(this.div);
+
+            //  Añade un mayor margen inferior si es un dispositivo móvil por el input que se va a crear
+            if (mobile) {
+                //  Si el dispositivo tiene una anchura menor a 720, se agranda la fuente y acomoda el margen inferior por ese cambio
+                if (window.innerWidth >= 720)
+                    this.div.classList.add("mobile");
+                else {
+                    document.body.classList.add("magnify");
+                    this.div.classList.add("mobile-magnify");
+                }
+            }
 
             window.onkeydown = function(e) {
                 var key = (e.which) ? e.which : e.keyCode;
@@ -533,9 +545,15 @@
     if (mobile) {
         var input = document.createElement("input");
 
-        //  Creación del input
+        //  Configuración del input
         input.type = "text";
         input.id = "text-field";
+        input.value = "";
+        input.placeholder = campo;
+        input.setAttribute("autocomplete", "off");
+        input.setAttribute("autocorrect", "off");
+        input.setAttribute("autocapitalize", "off");
+        input.setAttribute("spellcheck", "off");
         document.body.appendChild(input);
 
         //  Adición de listeners
@@ -547,9 +565,11 @@
             onFocus = false;
         });
 
-        //  Se agrega un margen inferior para que el input no se sobreponga al resto del contenido, espera a que se jsterm esté creado
-        setTimeout(function() {
-            document.getElementById("jsterm").style.marginBottom = "2em";
-        }, 100);
+        //  En Android no se escribe el texto del input en el prompt de manera determinada
+        if (android) {
+            input.addEventListener("input", function () {
+                stdout.innerHTML = input.value;
+            });
+        }
     }
 })();
