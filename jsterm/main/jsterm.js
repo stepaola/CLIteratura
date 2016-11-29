@@ -169,8 +169,6 @@
             if (path[0] == '~') {
                 entry = this.fs;
                 path = path.substring(1, path.length);
-                console.log(entry);
-                console.log(path);
             }
 
             parts = path.split('/').filter(function(x) {
@@ -214,6 +212,7 @@
             })(0);
         },
 
+        //  Permite el autocompletar
         tabComplete: function(text) {
             var parts = text.replace(/^\s+/, '').split(' '),
                 matches = [];
@@ -234,11 +233,12 @@
                     for (var i in dir.contents) {
                         n = dir.contents[i].name;
                         if (n.startswith(last) && !n.startswith('.') && n != last) {
-                            if (dir.contents[i].type == 'exec')
+                            if (dir.contents[i].type == 'exec' && dir.contents[i].visible != false)
                                 matches.push(n + ' ');
                         }
                     }
                 }
+
                 for (var c in this.commands) {
                     // Private member.
                     if (c[0] == '_')
@@ -258,13 +258,16 @@
                 for (var i in dir.contents) {
                     n = dir.contents[i].name;
                     if (n.startswith(last) && !n.startswith('.') && n != last) {
-                        if (dir.contents[i].type == 'dir')
-                            matches.push(n + '/');
-                        else
-                            matches.push(n + ' ');
+                        if (dir.contents[i].visible != false) {
+                            if (dir.contents[i].type == 'dir')
+                                matches.push(n + '/');
+                            else
+                                matches.push(n + ' ');
+                        }
                     }
                 }
             }
+
             return matches;
         },
 
@@ -298,6 +301,7 @@
             };
         },
 
+        //  Añade el enlace según su tipo
         writeLink: function(e, str) {
             this.write('<span class="' + e.type + '">' + this._createLink(e, str) +
                 '</span>');
@@ -538,7 +542,7 @@
     }
 
     var term = Object.create(Terminal);
-    term.init(CONFIG, 'jsterm/json/content.json', COMMANDS, function() {
+    term.init(CONFIG, 'jsterm/texts/0-main_directory.json', COMMANDS, function() {
         term.enqueue('login')
             .enqueue(leyente)
             .enqueue('**********')

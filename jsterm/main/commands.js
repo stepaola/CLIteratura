@@ -47,15 +47,17 @@ COMMANDS.cat = function(argv, cb) {
 
     //  Si se ingreso algún argumento, busca leer el archivo
     filenames.forEach(function(filename, i) {
-        // Obtiene el contenido del argumento buscado
         var entry = this._terminal.getEntry(filename);
 
-        //  Si el valor es nulo
-        if (!entry)
+        //  Si el valor es nulo o no está visible; Ojo: la visibilidad no es para simular archivos ocultos que inician con punto, sino para no mostrarlos para nada, por algún tipo de mecánica de juego
+        if (!entry || entry.visible == false)
             this._terminal.write('cat: ' + filename + ': No such file or directory');
         //  Si se trata de una carpeta
         else if (entry.type === 'dir')
-            this._terminal.write('cat: ' + filename + ': Is a directory.');
+            this._terminal.write('cat: ' + filename + ': Is a directory');
+        //  Si no tiene permiso de acceso
+        else if (entry.permission == false)
+            this._terminal.write('cat: can\'t open ' + filename + ': Permission denied');
         //  Si se trata de un archivo existente, muestra su contenido
         else
             this._terminal.write(entry.contents);
@@ -73,15 +75,31 @@ COMMANDS.cd = function(argv, cb) {
     var filename = this._terminal.parseArgs(argv).filenames[0],
         entry;
 
+    //  Si no hay argumentos, entonces se va al directorio de inicio
     if (!filename)
         filename = '~';
+
+    //  Obtiene el contenido del argumento buscado
     entry = this._terminal.getEntry(filename);
-    if (!entry)
+
+    //  Si el valor es nulo o no está visible; Ojo: la visibilidad no es para simular archivos ocultos que inician con punto, sino para no mostrarlos para nada, por algún tipo de mecánica de juego
+    if (!entry || entry.visible == false)
         this._terminal.write('bash: cd: ' + filename + ': No such file or directory');
+    //  Si no se trata de una carpeta
     else if (entry.type !== 'dir')
-        this._terminal.write('bash: cd: ' + filename + ': Not a directory.');
-    else
+        this._terminal.write('bash: cd: ' + filename + ': Not a directory');
+    //  Si no tiene permiso de acceso
+    else if (entry.permission == false)
+        this._terminal.write('bash: cd: ' + filename + ': Permission denied');
+    //  Si se trata de una carpeta con permiso de acceso
+    else {
         this._terminal.cwd = entry;
+
+        //  Esto ayuda a la lógica lúdica
+        ubication(entry);
+    }
+
+    //  Llama a un bound()
     cb();
 }
 
@@ -95,16 +113,24 @@ COMMANDS.gimp = function(argv, cb) {
         entry,
         imgs;
 
+    //  Si no se ingresó nada
     if (!filename) {
-        this._terminal.write('gimp: please specify an image file.');
+        this._terminal.write('gimp: please specify an image file');
         cb();
         return;
     }
 
+    //  Obtiene el contenido del argumento buscado
     entry = this._terminal.getEntry(filename);
-    if (!entry || entry.type !== 'img') {
-        this._terminal.write('gimp: file ' + filename + ' is not an image file.');
-    } else {
+
+    //  Si el valor es nulo, no es una imagen o no está visible; Ojo: la visibilidad no es para simular archivos ocultos que inician con punto, sino para no mostrarlos para nada, por algún tipo de mecánica de juego
+    if (!entry || entry.type !== 'img' || entry.visible == false)
+        this._terminal.write('gimp: file ' + filename + ' is not an image file');
+    //  Si no tiene permiso de acceso
+    else if (entry.permission == false)
+        this._terminal.write('gimp: can\'t open ' + filename + ': Permission denied');
+    //  Si se trata de una imagen con permiso de acceso
+    else {
         this._terminal.write('<img src="jsterm' + entry.contents + '"/>');
         imgs = this._terminal.div.getElementsByTagName('img');
         imgs[imgs.length - 1].onload = function() {
@@ -113,6 +139,8 @@ COMMANDS.gimp = function(argv, cb) {
         if ('caption' in entry)
             this._terminal.write('<br/>' + entry.caption);
     }
+
+    //  Llama a un bound()
     cb();
 }
 
@@ -170,36 +198,61 @@ COMMANDS.ls = function(argv, cb) {
         maxLen = 0,
         writeEntry;
 
+    // Función para escribir los ficheros que contiene el directorio
     writeEntry = function(e, str) {
+
+        //  Añade el enlace según su tipo
         this.writeLink(e, str);
+
+        //  Si hay un argumento «-l» se escribe de manera extendida
         if (args.indexOf('l') > -1) {
             if ('description' in e)
                 this.write(' - ' + e.description);
             this.write('<br>');
+        //  Si no hay argumento «-l» se escribe de manera compacta
         } else {
-            // Make all entries the same width like real ls. End with a normal
-            // space so the line breaks only after entries.
+            //  Make all entries the same width like real ls. End with a normal space so the line breaks only after entries.
             this.write(Array(maxLen - e.name.length + 2).join('&nbsp') + ' ');
         }
     }.bind(this._terminal);
 
+    //  Si no hay entrada se indica su inexistencia
     if (!entry)
         this._terminal.write('ls: cannot access ' + filename + ': No such file or directory');
+    //  Si se trata de un directorio
     else if (entry.type === 'dir') {
-        var dirStr = this._terminal.dirString(entry);
-        maxLen = entry.contents.reduce(function(prev, cur) {
-            return Math.max(prev, cur.name.length);
-        }, 0);
+        //  Si no hay permiso se niega mostrar el contenido
+        if (entry.permission == false) {
+            this._terminal.write('ls: cannot access ' + filename + ': Permission denied');
+        } else {
+            var dirStr = this._terminal.dirString(entry);
 
-        for (var i in entry.contents) {
-            var e = entry.contents[i];
-            if (args.indexOf('a') > -1 || e.name[0] !== '.')
-                writeEntry(e, dirStr + '/' + e.name);
+            //  Ayuda para acomodar adecuadamente la lista si se mostrará compacta
+            maxLen = entry.contents.reduce(function(prev, cur) {
+                return Math.max(prev, cur.name.length);
+            }, 0);
+
+            //  Se itinera el contenido del directorio
+            for (var i in entry.contents) {
+                var e = entry.contents[i];
+
+                //  Enlista los contenidos, contemplando o no el argumento «-a», solo si la visibilidad no es falsa
+                if (args.indexOf('a') > -1 || e.name[0] !== '.')
+                    if (e.visible != false)
+                        writeEntry(e, dirStr + '/' + e.name);
+            }
         }
+    //  Si se trata de un archivo
     } else {
+        //  Ayuda para acomodar adecuadamente la lista si se mostrará compacta
         maxLen = entry.name.length;
-        writeEntry(entry, filename);
+
+        //  Enlista los contenidos solo si la visibilidad no es falsa
+        if (e.visible != false)
+            writeEntry(entry, filename);
     }
+
+    //  Llama a un bound()
     cb();
 }
 
