@@ -27,15 +27,15 @@
     },{
         "name": "tux.png",
         "type": "img",
-        "visible": false,
+        "visible": true,
         "permission": true,
         "description": "Tux es el nombre de la mascota oficial de Linux.",
         "contents": "/img/penguin.png"
     },{
         "name": "01-casa_tomada-julio_cortazar",
         "type": "dir",
-        "visible": false,
-        "permission": false,
+        "visible": true,
+        "permission": true,
         "description": "Aprende a moverte entre ficheros y ver sus contenidos.",
         "contents": [{
             "name": "README",
@@ -73,21 +73,21 @@
             "permission": true,
             "description": "La entrada de nuestra casa, un zaguán con una puerta cancel.",
             "contents": [{
-                "name": "01-inicio",
+                "name": "01-inicio.txt",
                 "type": "text",
                 "visible": true,
                 "permission": true,
                 "description": "Nos gustaba la casa…",
                 "contents": "Nos gustaba la casa porque aparte de espaciosa y antigua (hoy que las casas antiguas sucumben a la más ventajosa liquidación de sus materiales) guardaba los recuerdos de nuestros bisabuelos, el abuelo paterno, nuestros padres y toda la infancia."
             },{
-                "name": "14-cosas_perdidas",
+                "name": "14-cosas_perdidas.txt",
                 "type": "text",
                 "visible": false,
                 "permission": false,
                 "description": "Han tomado esta parte…",
                 "contents": "—Han tomado esta parte —dijo Irene. El tejido le colgaba de las manos y las hebras iban hasta la cancel y se perdían debajo. Cuando vio que los ovillos habían quedado del otro lado, soltó el tejido sin mirarlo.<br /><br />—¿Tuviste tiempo de traer alguna cosa? —le pregunté inútilmente.<br /><br />—No, nada.<br /><br />Estábamos con lo puesto. Me acordé de los quince mil pesos en el armario de mi dormitorio. Ya era tarde ahora."
             },{
-                "name": "15-fin",
+                "name": "15-fin.txt",
                 "type": "text",
                 "visible": false,
                 "permission": false,
@@ -100,14 +100,14 @@
                 "permission": true,
                 "description": "Un living central que comunica todas las partes de la casa.",
                 "contents": [{
-                    "name": "11-casa_irene_y_yo",
+                    "name": "11-casa_irene_y_yo.txt",
                     "type": "text",
                     "visible": false,
                     "permission": false,
                     "description": "Cuando Irene soñaba…",
                     "contents": "(Cuando Irene soñaba en alta voz yo me desvelaba en seguida. Nunca pude habituarme a esa voz de estatua o papagayo, voz que viene de los sueños y no de la garganta. Irene decía que mis sueños consistían en grandes sacudones que a veces hacían caer el cobertor. Nuestros dormitorios tenían el living de por medio, pero de noche se escuchaba cualquier cosa en la casa. Nos oíamos respirar, toser, presentíamos el ademán que conduce a la llave del velador, los mutuos y frecuentes insomnios.<br /><br />Aparte de eso todo estaba callado en la casa. De día eran los rumores domésticos, el roce metálico de las agujas de tejer, un crujido al pasar las hojas del álbum filatélico. La puerta de roble, creo haberlo dicho, era maciza. En la cocina y el baño, que quedaban tocando la parte tomada, nos poníamos a hablar en voz más alta o Irene cantaba canciones de cuna. En una cocina hay demasiados ruidos de loza y vidrios para que otros sonidos irrumpan en ella. Muy pocas veces permitíamos allí el silencio, pero cuando tornábamos a los dormitorios y al living, entonces la casa se ponía callada y a media luz, hasta pisábamos despacio para no molestarnos. Yo creo que era por eso que de noche, cuando Irene empezaba a soñar en alta voz, me desvelaba en seguida.)"
                 },{
-                    "name": "13-puerta_cancel",
+                    "name": "13-puerta_cancel.txt",
                     "type": "text",
                     "visible": false,
                     "permission": false,
@@ -120,7 +120,7 @@
                     "permission": true,
                     "description": "El dormitorio de Irene que cuenta con un sofá y una mesa.",
                     "contents": [{
-                        "name": "10-irene_y_yo",
+                        "name": "10-irene_y_yo.txt",
                         "type": "text",
                         "visible": false,
                         "permission": false,
@@ -134,7 +134,7 @@
                     "permission": true,
                     "description": "Mi dormitorio que tiene un armario con algo muy valioso.",
                     "contents": [{
-                        "name": "08-cosas_perdidas",
+                        "name": "08-cosas_perdidas.txt",
                         "type": "text",
                         "visible": false,
                         "permission": false,
@@ -148,7 +148,7 @@
                     "permission": true,
                     "description": "Un camino a la izquierda, antes de la puerta de roble, para ir al baño y a la cocina.",
                     "contents": [{
-                        "name": "07-toma_fondo",
+                        "name": "07-toma_fondo.txt",
                         "type": "text",
                         "visible": false,
                         "permission": false,
@@ -168,7 +168,7 @@
                         "permission": true,
                         "description": "Nuestra fuente de comida fiambre y mate.",
                         "contents": [{
-                            "name": "09-ventajas",
+                            "name": "09-ventajas.txt",
                             "type": "text",
                             "visible": false,
                             "permission": false,
@@ -183,14 +183,14 @@
                     "permission": true,
                     "description": "Un pasillo con una maciza puerta de roble que divide la casa en dos partes.",
                     "contents": [{
-                        "name": "06-puerta_roble",
+                        "name": "06-puerta_roble.txt",
                         "type": "text",
                         "visible": true,
                         "permission": true,
                         "description": "Lo recordaré siempre…",
                         "contents": "Lo recordaré siempre con claridad porque fue simple y sin circunstancias inútiles. Irene estaba tejiendo en su dormitorio, eran las ocho de la noche y de repente se me ocurrió poner al fuego la pavita del mate. Fui por el pasillo hasta enfrentar la entornada puerta de roble, y daba la vuelta al codo que llevaba a la cocina cuando escuché algo en el comedor o en la biblioteca. El sonido venía impreciso y sordo, como un volcarse de silla sobre la alfombra o un ahogado susurro de conversación. También lo oí, al mismo tiempo o un segundo después, en el fondo del pasillo que traía desde aquellas piezas hasta la puerta. Me tiré contra la pared antes de que fuera demasiado tarde, la cerré de golpe apoyando el cuerpo; felizmente la llave estaba puesta de nuestro lado y además corrí el gran cerrojo para más seguridad."
                     },{
-                        "name": "12-puerta_roble",
+                        "name": "12-puerta_roble.txt",
                         "type": "text",
                         "visible": false,
                         "permission": false,
@@ -203,7 +203,7 @@
                         "permission": true,
                         "description": "El lugar donde guardo mis libros de literatura francesa.",
                         "contents": [{
-                            "name": "03-irene",
+                            "name": "03-irene.txt",
                             "type": "text",
                             "visible": true,
                             "permission": true,
@@ -217,7 +217,7 @@
                         "permission": true,
                         "description": "Un amplio comedor donde hay una botella de Hesperidina.",
                         "contents": [{
-                            "name": "04-casa_e_irene",
+                            "name": "04-casa_e_irene.txt",
                             "type": "text",
                             "visible": true,
                             "permission": true,
@@ -245,7 +245,7 @@
                         "permission": true,
                         "description": "Un gran dormitorio que guarda recuerdos de nuestros ancestros e infancia.",
                         "contents": [{
-                            "name": "02-irene_y_yo",
+                            "name": "02-irene_y_yo.txt",
                             "type": "text",
                             "visible": true,
                             "permission": true,
@@ -259,7 +259,7 @@
                         "permission": true,
                         "description": "Una sala con gobelinos.",
                         "contents": [{
-                            "name": "05-distribucion_casa",
+                            "name": "05-distribucion_casa.txt",
                             "type": "text",
                             "visible": true,
                             "permission": true,
