@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var COMMANDS = COMMANDS || {};
+var COMMANDS = COMMANDS || {},
+    location;
 
 COMMANDS.cat = function(argv, cb) {
     //  Obtiene los argumentos
@@ -274,27 +275,99 @@ COMMANDS.ls = function(argv, cb) {
 
 COMMANDS.tree = function(argv, cb) {
     var term = this._terminal,
-        home;
+        dirs = 0,
+        files = 0,
+        end = {},
+        firstDir,
+        dirStr;
 
+    //  Función para dibujar el árbol
     function writeTree(dir, level) {
-        dir.contents.forEach(function(entry) {
-            var str = '';
+        var entries = [];
 
-            if (entry.name.startswith('.'))
-                return;
-            for (var i = 0; i < level; i++)
-                str += '|  ';
-            str += '|&mdash;&mdash;';
+        //  Para obtener las entradas que se considerarán para el árbol
+        for (var x = 0; x < dir.contents.length; x++) {
+            var entry = dir.contents[x];
+
+            //  Solo se tomarán en cuenta las entradas que no sean archivos ocultos
+            if (entry.name.startswith('.') || entry.visible == false)
+                continue;
+            else
+                entries.push(entry);
+        }
+
+        //  Iteración para crear el árbol
+        for (var i = 0; i < entries.length; i++) {
+            var entry = entries[i],
+                str = "",
+                condition;
+
+            //  Crea los espacios adicionales para acomodar el árbol
+            for (var j = 0; j < level; j++) {
+
+                //  En el primer nivel no lleva espacio
+                if (j != 0)
+                    str += " ";
+
+                //  Si el nivel no ha finalizado, se pone una pipa
+                if (end["level" + j] != true)
+                    str += "│  ";
+                //  Si el nivel ha finalizado, solo agrega espacios
+                else
+                    str += "   ";
+            }
+
+            //  Una vez terminados los espacios adicionales, se agregan los elementos finales
+
+            //  En el primer nivel no lleva espacio
+            if (level != 0)
+                str += " ";
+
+            //  Si no es la última entrada
+            if (i != entries.length - 1) {
+                str += "├── ";
+                end["level" + level] = false;
+            }
+            //  Si es la última entrada
+            else {
+                str += "└── ";
+                end["level" + level] = true;
+            }
+
+            //  Escribe la línea de texto final más el nombre del archivo con enlace
             term.write(str);
             term.writeLink(entry, term.dirString(dir) + '/' + entry.name);
             term.write('<br>');
-            if (entry.type === 'dir')
+
+            //  Va contando las carpetas y archivos
+            if (entry.type === "dir")
+                dirs = dirs + 1;
+            else
+                files = files + 1;
+
+            //  Si se trata de una carpeta y tiene permisos de acceso, se crea su árbol interior
+            if (entry.type === 'dir' && entry.permission != false)
                 writeTree(entry, level + 1);
-        });
-    };
-    home = this._terminal.getEntry('~');
-    this._terminal.writeLink(home, '~');
+        }
+    }
+
+    //  Obtiene el objeto del directorio actual
+    firstDir = this._terminal.getEntry(this._terminal.getCWD());
+
+    //  Obtiene la ruta absoluta del directorio actual
+    dirStr = this._terminal.dirString(firstDir);
+
+    //  Lo escribe con vínculo añadido y salto de línea
+    this._terminal.write("<span class=\"dir\"><a href=\"javascript:void(0)\" class=\"" + firstDir.name + "\" onclick=\"typeCommand('cd .')\">.</a></span>");
     this._terminal.write('<br>');
-    writeTree(home, 0);
+
+    //  Crea el árbol
+    writeTree(firstDir, 0);
+
+    //  Escribe la cantidad total de ficheros
+    this._terminal.write("<br>");
+    this._terminal.write(dirs + " directories, " + files + " files");
+
+    //  Llama a un bound()
     cb();
 }
