@@ -1,6 +1,6 @@
-╔═╗╦  ╦┌┬┐┌─┐┬─┐┌─┐┌┬┐┬ ┬┬─┐┌─┐<br />
-║  ║  ║ │ ├┤ ├┬┘├─┤ │ │ │├┬┘├─┤<br />
-╚═╝╩═╝╩ ┴ └─┘┴└─┴ ┴ ┴ └─┘┴└─┴ ┴
+    ╔═╗╦  ╦┌┬┐┌─┐┬─┐┌─┐┌┬┐┬ ┬┬─┐┌─┐
+    ║  ║  ║ │ ├┤ ├┬┘├─┤ │ │ │├┬┘├─┤
+    ╚═╝╩═╝╩ ┴ └─┘┴└─┴ ┴ ┴ └─┘┴└─┴ ┴
 
 Aprende el uso básico de la interfaz de línea de comandos (*Command-line interface*)
 con obras literarias.
