@@ -105,6 +105,20 @@ div#jsterm .img, div#jsterm .img a {
     color: black;
 }
 
+#restored {
+    display: block;
+    width: 100%;
+    background-color: rgb(15,33,17);
+    color: rgb(68,119,73);
+    border-left: 3px solid rgb(67,112,72);
+    border-right: 3px solid rgb(67,112,72);
+}
+
+#last-login {
+    background-color: rgb(10,38,150);
+    color: rgb(0,243,85);
+}
+
 .mobile {
     margin-bottom: 3em !important;
 }

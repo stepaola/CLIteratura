@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var COMMANDS = COMMANDS || {},
-    location;
+var COMMANDS = COMMANDS || {};
 
 COMMANDS.cat = function(argv, cb) {
     //  Obtiene los argumentos
@@ -60,8 +59,12 @@ COMMANDS.cat = function(argv, cb) {
         else if (entry.permission == false)
             this._terminal.write('cat: can\'t open ' + filename + ': Permission denied');
         //  Si se trata de un archivo existente, muestra su contenido
-        else
+        else {
             this._terminal.write(entry.contents);
+
+            //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
+            fileTracking(entry);
+        }
 
         //  Crea un salto de línea si no es el último argumento ingresado
         if (i !== filenames.length - 1)
@@ -96,12 +99,16 @@ COMMANDS.cd = function(argv, cb) {
     else {
         this._terminal.cwd = entry;
 
-        //  Esto ayuda a la lógica lúdica
-        ubication(entry);
+        //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
+        dirTracking(entry);
     }
 
     //  Llama a un bound()
     cb();
+
+    //  Cuando se ingresa directamente a la raíz de la lección siempre se despliega el README si lo hay
+    if (entry.lesson == true && this._terminal.getEntry("README") != null)
+        typeCommand("cat README");
 }
 
 COMMANDS.clear = function(argv, cb) {
@@ -137,8 +144,13 @@ COMMANDS.gimp = function(argv, cb) {
         imgs[imgs.length - 1].onload = function() {
             this.scroll();
         }.bind(this._terminal);
+
+        //  Si tiene la propiedad «caption» se escribe abajo de la imagen
         if ('caption' in entry)
             this._terminal.write('<br/>' + entry.caption);
+
+        //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
+        fileTracking(entry);
     }
 
     //  Llama a un bound()
@@ -174,18 +186,46 @@ COMMANDS.help = function(argv, cb) {
 }
 
 COMMANDS.login = function(argv, cb) {
+
     this._terminal.returnHandler = function() {
         var username = this.stdout().innerHTML;
 
+        //  Lleva al fondo
         this.scroll();
+
+        //  Si hay nombre de usuario, lo cambia sin espacios
         if (username)
-            this.config.username = username;
+            this.config.username = username.replace(/\s/g, "");
+
+        //  Impre lo último en la terminal y va al fondo
         this.write('<br>Password: ');
         this.scroll();
+
+        //  Al final se guarda el usuario y contraseña
         this.returnHandler = function() {
+            var user = this.stdout().innerHTML.split("<br>")[0].replace(/\s/g, ""),
+                password = this.stdout().innerHTML.split(": ")[1].trim();
+
+            //  Se guarda si no está vacío
+            if (user != "") {
+                savedData.user = user;
+                localStorage.user = user;
+                saveDate();
+            }
+
+            //  Se guarda si no está vacío
+            if (password != "") {
+                savedData.password = password;
+                localStorage.password = password;
+                saveDate();
+            }
+
+            //  Llama a un bound()
             cb();
         }
     }.bind(this._terminal);
+
+    //  Imprime lo inicial y va al fondo
     this._terminal.write('Username: ');
     this._terminal.newStdout();
     this._terminal.scroll();
@@ -210,6 +250,9 @@ COMMANDS.ls = function(argv, cb) {
             if ('description' in e)
                 this.write(' - ' + e.description);
             this.write('<br>');
+
+            //  «ls -l» es el último comando cuando inicia la terminal, se quita el wait para poder escribir de nuevo
+            wait = false;
         //  Si no hay argumento «-l» se escribe de manera compacta
         } else {
             //  Make all entries the same width like real ls. End with a normal space so the line breaks only after entries.

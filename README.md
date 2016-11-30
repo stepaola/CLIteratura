@@ -8,7 +8,7 @@ con obras literarias.
 CLIteratura es un pequeño proyecto que intenta acercar al uso de interfaces de línea
 de comandos a personas que tienen ninguna o poca relación con el ámbito informático.
 
-Mediante el contacto de algo más conocido, como son los textos literarios, especialmente
+Mediante el contacto con algo más conocido, como son los textos literarios, especialmente
 el cuento o la novela, se busca habituar al usuario general con la sintaxis y el
 uso de la terminal.
 

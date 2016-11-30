@@ -16,7 +16,15 @@
     //  Ayudará para las versiones móbiles para ver si el input está en focus y para detectar un dispositivo móvil
     var onFocus,
         mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
-        android = /Android/i.test(navigator.userAgent);
+        android = /Android/i.test(navigator.userAgent),
+        wait = true
+        inicio = true;
+
+    //  Se despliega una alerta si no es posible guardar el progreso
+    if (typeof(Storage) === "undefined")
+        alert(noLS);
+    else
+        console.log(localStorage);
 
     if (typeof Object.create !== 'function') {
         Object.create = function(o) {
@@ -113,22 +121,31 @@
             }
 
             window.onkeydown = function(e) {
-                var key = (e.which) ? e.which : e.keyCode;
+                if (!wait) {
+                    var key = (e.which) ? e.which : e.keyCode;
 
-                //  La tecla 8 es la de retroceso, solo se evita que funcione si el input no está en focus
-                if ((key == 8 && !onFocus) || key == 9 || key == 13 || key == 46 || key == 38 || key == 40 || e.ctrlKey) {
-                    e.preventDefault();
+                    //  La tecla 8 es la de retroceso, solo se evita que funcione si el input no está en focus
+                    if ((key == 8 && !onFocus) || key == 9 || key == 13 || key == 46 || key == 38 || key == 40 || e.ctrlKey)
+                        e.preventDefault();
+
+                    this._handleSpecialKey(key, e);
                 }
-
-                this._handleSpecialKey(key, e);
             }.bind(this);
 
             window.onkeypress = function(e) {
-                this._typeKey((e.which) ? e.which : e.keyCode);
+                if (!wait) {
+                    this._typeKey((e.which) ? e.which : e.keyCode);
+                }
             }.bind(this);
 
+            //  Si no hay datos guardados, inicia en el directorio de inicio
+            if (localStorage.user === undefined || localStorage.path === undefined)
+                this.cwd = this.fs;
+            //  Si hay datos guardados, inicia en donde estaba
+            else
+                this.cwd = this.getEntry(localStorage.path);
+
             this.returnHandler = this._execute;
-            this.cwd = this.fs;
             this._prompt();
             this._toggleBlinker(600);
             this._dequeue();
@@ -189,6 +206,7 @@
 
             if (!output)
                 return;
+
             output.innerHTML += text;
         },
 
@@ -273,6 +291,7 @@
 
         enqueue: function(command) {
             this._queue.push(command);
+
             return this;
         },
 
@@ -420,7 +439,75 @@
 
             prompt.classList.add('prompt');
             prompt.id = 'currentPrompt';
-            prompt.innerHTML = this.config.prompt(this.getCWD(), this.config.username);
+
+            //  Si es la primera vez
+            if (localStorage.user === undefined || localStorage.path === undefined) {
+                prompt.innerHTML = this.config.prompt(this.getCWD(), this.config.username);
+                localStorage.path = this.getCWD();console.log("Primera vez");
+
+                inicio = false;
+            }
+            //  Si se regresa
+            else {
+                //  Si se reinició
+                if (inicio) {
+                    var oldDate = JSON.parse(localStorage.date),
+                        actualDate,
+                        dayStr,
+                        monthStr,
+                        hourSrt,
+                        hour12;
+
+                    //  Obitene la fecha actual
+                    saveDate();
+                    actualDate = JSON.parse(localStorage.date);
+
+                    //  Obtiene el nombre del día de la semana
+                    switch (oldDate.dayWeek) {
+                        case 0:dayStr = "Sun";break;
+                        case 1:dayStr = "Mon";break;
+                        case 2:dayStr = "Tue";break;
+                        case 3:dayStr = "Wed";break;
+                        case 4:dayStr = "Thu";break;
+                        case 5:dayStr = "Fri";break;
+                        case 6:dayStr = "Sat";break;
+                    }
+
+                    //  Obtiene el nombre del mes
+                    switch (oldDate.month) {
+                        case 1:monthStr = "Jan";break;
+                        case 2:monthStr = "Feb";break;
+                        case 3:monthStr = "Mar";break;
+                        case 4:monthStr = "Apr";break;
+                        case 5:monthStr = "May";break;
+                        case 6:monthStr = "Jun";break;
+                        case 7:monthStr = "Jul";break;
+                        case 8:monthStr = "Aug";break;
+                        case 9:monthStr = "Sep";break;
+                        case 10:monthStr = "Oct";break;
+                        case 11:monthStr = "Nov";break;
+                        case 12:monthStr = "Dec";break;
+                    }
+
+                    //  Obtiene el formato de doce horas
+                    if (actualDate.hour > 12){
+                        hour12 = actualDate.hour - 12;
+                        hourSrt = "p.m.";
+                    } else {
+                        hour12 = actualDate.hour;
+                        hourSrt = "a.m.";
+                    }
+
+                    //  Ingresa los datos de la restauración y último ingreso
+                    prompt.innerHTML =  '<span id="restored">  [Restored: ' + actualDate.day + '/' + actualDate.month + '/' + actualDate.year + ' ' + hour12 + ':' + actualDate.minute + ':' + actualDate.second + ' ' + hourSrt + ']</span>' +
+                                        '<span id="last-login">Last login: ' + dayStr + ' ' + monthStr + ' ' + oldDate.day + ' ' + oldDate.hour + ':' + oldDate.minute + ':' + oldDate.second + ' on console</span><br />';
+
+                    inicio = false;
+                }
+
+                prompt.innerHTML += this.config.prompt(localStorage.path, localStorage.user);
+            }
+
             div.appendChild(prompt);
 
             this._resetID('#stdout');
@@ -543,12 +630,20 @@
 
     var term = Object.create(Terminal);
     term.init(CONFIG, 'jsterm/texts/0-main_directory.json', COMMANDS, function() {
-        term.enqueue('login')
-            .enqueue(leyente)
-            .enqueue('**********')
-            .enqueue('cat README')
-            .enqueue('help')
-            .enqueue('ls -l')
+        //  Solo se muestra la primera vez
+        if (localStorage.date === undefined) {
+            term.enqueue('login')
+                .enqueue(usuarioDefault)
+                .enqueue(contrasenaDefault)
+                .enqueue('cat README')
+                .enqueue('help');
+        //  Muestra el README en las otras veces
+        } else {
+            term.enqueue('cat ~/README');
+        }
+
+        //  Siempre ejecuta esto para desbloquear el teclado
+        term.enqueue('ls -l')
             .begin();
     });
 
