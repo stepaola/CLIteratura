@@ -413,15 +413,14 @@
                 //  Llama a iniciar la validación
                 validate(this.fs, 1);
 
+                //  Ingresa los valores previos para evitar que reinicie la suma
+                if (localStorage.times !== undefined)
+                    savedData.times = JSON.parse(localStorage.times);
+
                 //  Si se quedó adentro de una lección, reinicia el timer
                 if (localStorage.lessonActual !== undefined) {
                     var entry = this.getEntry(localStorage.path);
-
-                    //  Activa el timer
                     dirTracking(entry);
-
-                    //  Ingresa los valores previos para evitar que reinicie la suma
-                    savedData.times = JSON.parse(localStorage.times);
                 }
             }
         },

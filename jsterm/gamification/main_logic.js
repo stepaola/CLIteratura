@@ -59,6 +59,8 @@ function saveDate () {
 
 //  Inicia un conteo para medir cuánto tiempo se pasa en una lección
 function timer () {
+    console.log(localStorage.times);
+
     //  Se suma tiempo solo si la ventana está activa
     if (active) {
         var lesson = parseInt(lessonActual.name.split("-")[0]);
