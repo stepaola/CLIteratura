@@ -1,7 +1,9 @@
 var active = true,
     savedData = {},
-    lessonActual = null,
+    lessonActual,
     timeElapsed;
+
+//
 
 //  Para detectar si se está en la ventana o no
 window.addEventListener("focus", focus);

@@ -15,23 +15,17 @@ body {
     background: black;
 }
 
-#jsterm a {
-    color: #E0E0E0;
-    text-decoration: none;
-}
-
-#jsterm a:hover {
-    text-decoration: underline;
-}
+/* Todo el contenido del simulador de la terminal va en un div con id «jsterm» */
 
 div#jsterm {
-    background: black;
     font-family: monospace;
     font-size: 1.5em;
     color: #E0E0E0;
     margin-bottom: 1em;
     white-space: pre-wrap;
 }
+
+/* Prompt */
 
 div#jsterm .host, div#jsterm .host a {
     color: #5555ff;
@@ -47,6 +41,8 @@ div#jsterm .cwd, div#jsterm .cwd a {
     color: #ffff55;
     font-weight: bold;
 }
+
+/* Ficheros */
 
 div#jsterm .dir, div#jsterm .dir a {
     color: #5555ff;
@@ -68,17 +64,24 @@ div#jsterm .img, div#jsterm .img a {
     font-weight: bold;
 }
 
+/* Enlaces */
+
+#jsterm a {
+    color: #E0E0E0;
+    text-decoration: none;
+}
+
+#jsterm a:hover {
+    text-decoration: underline;
+}
+
+/* Cursor parpadeante */
+
 #blinker {
     line-height: .9em;
 }
 
-#text-field {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    font-size: 1.5em;
-}
+/* Botón de ayuda */
 
 #help {
     position: fixed;
@@ -105,6 +108,8 @@ div#jsterm .img, div#jsterm .img a {
     color: black;
 }
 
+/* Sesión restaurada */
+
 #restored {
     display: block;
     width: 100%;
@@ -118,6 +123,18 @@ div#jsterm .img, div#jsterm .img a {
     background-color: rgb(10,38,150);
     color: rgb(0,243,85);
 }
+
+/* Campo de texto para dispositivos móviles */
+
+#text-field {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 1.5em;
+}
+
+/* Márgenes inferiores o aumentos de tamaño para dispositivos móviles */
 
 .mobile {
     margin-bottom: 3em !important;

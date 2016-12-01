@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-(function() {
+(function () {
     //  Ayudará para las versiones móbiles para ver si el input está en focus y para detectar un dispositivo móvil
     var onFocus,
         mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
         android = /Android/i.test(navigator.userAgent),
-        wait = true
-        inicio = true;
+        wait = true,
+        promptStart = true,
+        lessons = ["jsterm/texts/1-lesson01.json"];
 
     //  Se despliega una alerta si no es posible guardar el progreso
     if (typeof(Storage) === "undefined")
@@ -43,8 +44,8 @@
 
             var aArgs = Array.prototype.slice.call(arguments, 1),
                 fToBind = this,
-                fNOP = function() {},
-                fBound = function() {
+                fNOP = function () {},
+                fBound = function () {
                     return fToBind.apply(this instanceof fNOP && oThis ?
                         this :
                         oThis,
@@ -58,13 +59,15 @@
         };
     }
 
-    function loadFS(name, cb) {
+    //  Obtiene el contenido de los archivos JSON
+    function loadFS(name, cb, r) {
         var ajax = new XMLHttpRequest();
 
-        ajax.onreadystatechange = function() {
+        ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200)
                 cb(ajax.responseText);
         };
+
         ajax.open('GET', name);
         ajax.send();
     };
@@ -78,18 +81,38 @@
 
             if (commands)
                 this.loadCommands(commands);
-
             if (fs)
                 this.loadFS(fs, cb);
             else if (cb)
                 cb();
         },
 
+        //  Llama a cargar los contenidos
         loadFS: function(name, cb) {
+            //  Corresponde a la función «loadFS» que está en la línea 60+
             loadFS(name, function(responseText) {
-                this.fs = JSON.parse(responseText);
-                this._addDirs(this.fs, this.fs);
-                cb && cb();
+                var t = this;
+
+                //  El valor «this» se guarda en «a» para usarlo en el la función «loadFS» que está adentro del loop
+                t.fs = JSON.parse(responseText);
+
+                //  Se cargan cada una de los lecciones
+                for (var i = 0; i < lessons.length; i++) {
+                    //  Se guarda para después usarla en la siguiente función «loadFS»
+                    var iF = i;
+
+                    //  Llama a cargar las lecciones
+                    loadFS (lessons[i], function(responseText) {
+                        //  Agrega las lecciones en la parte de los contenidos del directorio principal
+                        t.fs.contents.push(JSON.parse(responseText));
+
+                        //  Si ya se trata de la última lección, se añade todo y se inicia la ejecución de comandos
+                        if (iF == lessons.length - 1) {
+                            t._addDirs(t.fs, t.fs);
+                            cb && cb();
+                        }
+                    });
+                }
             }.bind(this));
         },
 
@@ -104,6 +127,9 @@
 
         begin: function(element) {
             var parentElement = element || document.body;
+
+            //  Valida el path si está guardado
+            this.validPath();
 
             this.div = document.createElement('div');
             this.div.id = ('jsterm');
@@ -121,6 +147,7 @@
             }
 
             window.onkeydown = function(e) {
+                //  Solo es posible si no hay espera
                 if (!wait) {
                     var key = (e.which) ? e.which : e.keyCode;
 
@@ -133,17 +160,20 @@
             }.bind(this);
 
             window.onkeypress = function(e) {
+                //  Solo es posible si no hay espera
                 if (!wait) {
                     this._typeKey((e.which) ? e.which : e.keyCode);
                 }
             }.bind(this);
 
-            //  Si no hay datos guardados, inicia en el directorio de inicio
+            //  Si no hay datos guardados, inicia en el directorio de promptStart
             if (localStorage.user === undefined || localStorage.path === undefined)
                 this.cwd = this.fs;
             //  Si hay datos guardados, inicia en donde estaba
-            else
+            else {
                 this.cwd = this.getEntry(localStorage.path);
+            }
+
 
             this.returnHandler = this._execute;
             this._prompt();
@@ -151,7 +181,7 @@
             this._dequeue();
         },
 
-        getCWD: function() {
+        getCWD: function () {
             return this.dirString(this.cwd);
         },
 
@@ -175,7 +205,7 @@
             if (!path)
                 return null;
 
-            //  Si una vez eliminado los espacios al inicio y al final de la línea es nada, regresa nulo
+            //  Si una vez eliminado los espacios al promptStart y al final de la línea es nada, regresa nulo
             path = path.trim();
             if (!path.length)
                 return null;
@@ -210,20 +240,26 @@
             output.innerHTML += text;
         },
 
-        defaultReturnHandler: function() {
+        defaultReturnHandler: function () {
             this.returnHandler = this._execute;
         },
 
+        //  Escribe los comandos
         typeCommand: function(command, cb) {
             var that = this;
 
+            //  Evitará que se pueda teclear mientras se escribe
+            wait = true;
+
             (function type(i) {
                 if (i == command.length) {
+                    //  Finaliza de escribir, por lo que se vuelve a habilitar el teclado
+                    wait = false;
                     that._handleSpecialKey(13);
                     if (cb) cb();
                 } else {
                     that._typeKey(command.charCodeAt(i));
-                    setTimeout(function() {
+                    setTimeout(function () {
                         type(i + 1);
                     }, 100);
                 }
@@ -250,7 +286,7 @@
                 if (dir) {
                     for (var i in dir.contents) {
                         n = dir.contents[i].name;
-                        if (n.startswith(last) && !n.startswith('.') && n != last) {
+                        if (n.startswith(last) && !n.startswith('..') && n != last) {
                             if (dir.contents[i].type == 'exec' && dir.contents[i].visible != false)
                                 matches.push(n + ' ');
                         }
@@ -275,7 +311,7 @@
 
                 for (var i in dir.contents) {
                     n = dir.contents[i].name;
-                    if (n.startswith(last) && !n.startswith('.') && n != last) {
+                    if (n.startswith(last) && !n.startswith('..') && n != last) {
                         if (dir.contents[i].visible != false) {
                             if (dir.contents[i].type == 'dir')
                                 matches.push(n + '/');
@@ -296,7 +332,7 @@
         },
 
         //  Hace scroll hasta el fondo
-        scroll: function() {
+        scroll: function () {
             window.scrollTo(0, document.body.scrollHeight);
         },
 
@@ -327,18 +363,67 @@
         },
 
         //  Obtiene lo ingresado
-        stdout: function() {
+        stdout: function () {
             return this.div.querySelector('#stdout');
         },
 
         // Crea un nuevo ingreso a partir de lo ingresado con anterioridad
-        newStdout: function() {
+        newStdout: function () {
             var stdout = this.stdout(),
                 newstdout = document.createElement('span');
 
             this._resetID('#stdout');
             newstdout.id = 'stdout';
             stdout.parentNode.insertBefore(newstdout, stdout.nextSibling);
+        },
+
+        //  Valida el path o lo cambia
+        validPath: function () {
+            if (localStorage.path !== undefined) {
+                var p = localStorage.path.split("/");
+
+                //  Función recursiva de validación
+                function validate (e, l) {
+
+                    //  Iteración para comprobar cada parte del path
+                    for (var i = 0; i < e.contents.length; i++) {
+
+                        //  Solo analiza los directorios
+                        if (e.contents[i].type == "dir") {
+
+                            //  Si el nombre de un directorio existente es igual al de la parte actual del path
+                            if (e.contents[i].name == p[l]) {
+
+                                //  Si existe un nivel más, vuelve a llamar la función y rompe la ejecución actual
+                                if (l + 1 <= p.length - 1) {
+                                    validate(e.contents[i], l + 1);
+                                    break;
+                                //  Rompe la ejecución actual
+                                } else
+                                    break;
+                            }
+
+                            //  Si no hubo igualdad, se cambia el path para iniciar en el directorio inicial
+                            if (i == e.contents.length - 1)
+                                localStorage.path = "~";
+                        }
+                    }
+                }
+
+                //  Llama a iniciar la validación
+                validate(this.fs, 1);
+
+                //  Si se quedó adentro de una lección, reinicia el timer
+                if (localStorage.lessonActual !== undefined) {
+                    var entry = this.getEntry(localStorage.path);
+
+                    //  Activa el timer
+                    dirTracking(entry);
+
+                    //  Ingresa los valores previos para evitar que reinicie la suma
+                    savedData.times = JSON.parse(localStorage.times);
+                }
+            }
         },
 
         _createLink: function(entry, str) {
@@ -361,11 +446,11 @@
             }
         },
 
-        _dequeue: function() {
+        _dequeue: function () {
             if (!this._queue.length)
                 return;
 
-            this.typeCommand(this._queue.shift(), function() {
+            this.typeCommand(this._queue.shift(), function () {
                 this._dequeue()
             }.bind(this));
         },
@@ -416,7 +501,7 @@
             }
 
             if (timeout) {
-                setTimeout(function() {
+                setTimeout(function () {
                     this._toggleBlinker(timeout);
                 }.bind(this), timeout);
             }
@@ -429,7 +514,7 @@
                 element.removeAttribute('id');
         },
 
-        _prompt: function() {
+        _prompt: function () {
             var div = document.createElement('div'),
                 prompt = document.createElement('span'),
                 command = document.createElement('span');
@@ -443,14 +528,14 @@
             //  Si es la primera vez
             if (localStorage.user === undefined || localStorage.path === undefined) {
                 prompt.innerHTML = this.config.prompt(this.getCWD(), this.config.username);
-                localStorage.path = this.getCWD();console.log("Primera vez");
+                localStorage.path = this.getCWD();
 
-                inicio = false;
+                promptStart = false;
             }
             //  Si se regresa
             else {
                 //  Si se reinició
-                if (inicio) {
+                if (promptStart) {
                     var oldDate = JSON.parse(localStorage.date),
                         actualDate,
                         dayStr,
@@ -502,7 +587,7 @@
                     prompt.innerHTML =  '<span id="restored">  [Restored: ' + actualDate.day + '/' + actualDate.month + '/' + actualDate.year + ' ' + hour12 + ':' + actualDate.minute + ':' + actualDate.second + ' ' + hourSrt + ']</span>' +
                                         '<span id="last-login">Last login: ' + dayStr + ' ' + monthStr + ' ' + oldDate.day + ' ' + oldDate.hour + ':' + oldDate.minute + ':' + oldDate.second + ' on console</span><br />';
 
-                    inicio = false;
+                    promptStart = false;
                 }
 
                 prompt.innerHTML += this.config.prompt(localStorage.path, localStorage.user);
@@ -596,7 +681,7 @@
             if (command && command.length) {
                 if (command in this.commands) {
                     valid = true;
-                    this.commands[command](args, function() {
+                    this.commands[command](args, function () {
                         this.defaultReturnHandler();
                         this._prompt()
                     }.bind(this));
@@ -629,7 +714,7 @@
     }
 
     var term = Object.create(Terminal);
-    term.init(CONFIG, 'jsterm/texts/0-main_directory.json', COMMANDS, function() {
+    term.init(CONFIG, 'jsterm/texts/0-home_directory.json', COMMANDS, function () {
         //  Solo se muestra la primera vez
         if (localStorage.date === undefined) {
             term.enqueue('login')

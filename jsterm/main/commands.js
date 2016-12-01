@@ -106,8 +106,8 @@ COMMANDS.cd = function(argv, cb) {
     //  Llama a un bound()
     cb();
 
-    //  Cuando se ingresa directamente a la raíz de la lección siempre se despliega el README si lo hay
-    if (entry.lesson == true && this._terminal.getEntry("README") != null)
+    //  Cuando se ingresa directamente a la raíz de la lección siempre se despliega el README si lo hay y si es un ingreso desde afuera
+    if (entry.lesson == true && this._terminal.getEntry("README") != null && filename != "." && filename.split("/")[filename.split("/").length - 1] != "..")
         typeCommand("cat README");
 }
 
@@ -251,8 +251,6 @@ COMMANDS.ls = function(argv, cb) {
                 this.write(' - ' + e.description);
             this.write('<br>');
 
-            //  «ls -l» es el último comando cuando inicia la terminal, se quita el wait para poder escribir de nuevo
-            wait = false;
         //  Si no hay argumento «-l» se escribe de manera compacta
         } else {
             //  Make all entries the same width like real ls. End with a normal space so the line breaks only after entries.
