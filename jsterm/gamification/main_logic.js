@@ -2,8 +2,6 @@ var active = true,
     lessonActual,
     timeElapsed;
 
-//
-
 //  Para detectar si se está en la ventana o no
 window.addEventListener("focus", focus);
 window.addEventListener("blur", blur);
@@ -20,9 +18,16 @@ function blur () {
 
 //  Llama a la lógica particular de la lección
 function particularFunction (i, init) {
-    init = init || false;
-
     var name;
+
+    /*
+        Es grotesco que ese «init» se herede en varias funciones solo para
+        denotar cuándo es un restablecimiento de cambios después de una restauración
+        y cuándo es un nuevo cambio.
+    */
+
+    //  Falso si no se estipuló
+    init = init || false;
 
     //  Se agrega un cero si es menor a 10
     if (i < 10)
@@ -62,7 +67,7 @@ function saveDate () {
 function timer () {
     //  Se suma tiempo solo si la ventana está activa
     if (active) {
-        var lesson = parseInt(lessonActual.name.split("-")[0]);
+        var lesson = parseInt(lessonActual.name);
 
         //  Si nunca se ha tomado el tiempo
         if (savedData.times == undefined || savedData.times["lesson" + lesson] == undefined) {
@@ -109,7 +114,7 @@ function lessonChange (entry) {
         lessonActual = entry;
 
         //  Guarda el cambio
-        savedData.lessonActual = parseInt(lessonActual.name.split("-")[0]);
+        savedData.lessonActual = parseInt(lessonActual.name);
         localStorage.lessonActual = savedData.lessonActual;
         saveDate();
     }
@@ -158,8 +163,8 @@ function fileTracking (entry) {
 
     //  Va guardando el avance del usuario a través de las lecciones si es posible comparar
     if (lessonActual != null && entry.track != undefined) {
-        var lessonN = parseInt(lessonActual.name.split("-")[0]),
-            entryN = parseInt(entry.name.split("-")[0]);
+        var lessonN = parseInt(lessonActual.name),
+            entryN = parseInt(entry.name);
 
         //  La comparación reside en que el archivo tiene que abrirse adentro de la lección en curso, para evitar falsos positivos o trampa
         if (entry.track == lessonN) {
@@ -204,19 +209,75 @@ function fileTracking (entry) {
 }
 
 //  Cambia permisos
-function changePermission (entry, init, cVisible) {
+function changePermission (entry, init, cVisible, cPermission) {
     var term = COMMANDS._terminal;
 
-    cVisible = cVisible || false;
+    //  Establece el valor de las variables según si se estipularon o no
+    cPermission = cPermission === undefined ? null : cPermission;
+    cVisible = cVisible === undefined ? null : cVisible;
     init = init || false;
 
-    // console.log(entry);
-    // console.log(init);
-    // console.log(cVisible);
-    // console.log(term.getCWD());
+    //  Función para el cambio
+    function change (bool) {
+        var val = bool == entry.visible ? cVisible : cPermission;
 
+        //  Si la variable no fue estipulada
+        if (val == null) {
+            //  Si la llave no existe, se estipula falsa, ya que por defecto es verdadera
+            if (bool === undefined)
+                bool = false;
+            //  Si la llave existe, se cambia su valor
+            else
+                bool = !bool;
+        }
+        //  Si la variable fue estipulada, ese valor se inserta
+        else
+            bool = val;
+
+        //  Da el nuevo valor
+        return bool;
+    }
+
+    //  Realiza los cambios según la llave
+    entry.visible = change(entry.visible);
+    entry.permission = change(entry.permission);
+
+    //  Se muestra el texto de desbloqueo si no se trata de una función al restaurar la sesión
     if (!init) {
-        console.log("ASd");
         term.write(desbloqueo);
     }
+}
+
+//  Cambia permisos de varios ficheros
+function changePermissions (array, init) {
+
+    /*
+        Sistematiza la puesta de cambios de varios archivos, si seguimos el siguiente ejemplo:
+            changePermissions([[term.getEntryIndx(6)], [term.getEntryIndx(1, true), true], [term.getEntryIndx(1, true), false, true]], init);
+        el array es:
+            [[term.getEntryIndx(6)], [term.getEntryIndx(1, true), true], [term.getEntryIndx(1, true), false, true]]
+        donde
+            term.getEntryIndx(i) obtiene un archivo o
+            term.getEntryIndx(i, bool) adquiere una carpeta según su índice,
+        y donde cada cada elemento manda a llamar:
+            1. [term.getEntryIndx(6)] = changePermission(archivo, init);
+            2. [term.getEntryIndx(1, true), true] = changePermission(carpeta, init, true);
+            3. [term.getEntryIndx(1, true), false, true]] = changePermission(carpeta, init, false true);
+    */
+
+    //  Itera cada uno de los elementos del conjunto que son igual a cada entrada a cambiar y sus opciones
+    for (var i = 0; i < array.length; i++)
+        switch (array[i].length) {
+            //  Si hubo una opción, será un «changePermission(entry, init, cVisible)»
+            case 2:
+                changePermission(array[i][0], init, array[i][1]);
+                break;
+            //  Si hubo dos opciones, será un «changePermission(entry, init, cVisible, cPermission)»
+            case 3:
+                changePermission(array[i][0], init, array[i][1], array[i][2]);
+                break;
+            //  Si no hubo opciones, será un «changePermission(entry, init)»
+            default:
+                changePermission(array[i][0], init);
+        }
 }

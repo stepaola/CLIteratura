@@ -135,6 +135,8 @@
             },{
                 "name": "puerta_roble",
                 "type": "dir",
+                "track": 1,
+                "index": 1,
                 "description": "Un pasillo con una maciza puerta de roble que divide la casa en dos partes.",
                 "contents": [{
                     "name": "06-puerta_roble.txt",

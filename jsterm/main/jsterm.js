@@ -14,8 +14,7 @@
 
 (function () {
     //  Ayudará para las versiones móbiles para ver si el input está en focus y para detectar un dispositivo móvil
-    var all,
-        onFocus,
+    var onFocus,
         mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
         android = /Android/i.test(navigator.userAgent),
         savedData = {},
@@ -130,7 +129,6 @@
         },
 
         finishLoad: function (t, a, cb) {
-            all = t.copy(a);
             t._addDirs(a, a);
             cb && cb();
 
@@ -233,7 +231,7 @@
             return '~' + dirStr;
         },
 
-        //  Obtiene el contenido del fichero a utilizar
+        //  Obtiene el fichero según el path
         getEntry: function (path) {
             var entry,
                 parts;
@@ -266,6 +264,46 @@
             }
 
             return entry;
+        },
+
+        //  Obtiene el fichero según el índice
+        getEntryIndx: function (index, dir) {
+            var entryTrack = null;
+
+            /*
+                Si se trata de un archivo es posible llamarla con:
+                    getEntryIndx(i) | getEntryIndx(i, false)
+                Si se trata de una carpeta es posible llamarla con:
+                    getEntryIndx(i, true)
+                * Es necesario espeficiar el parámetro «dir» como verdadero
+                    para buscar una carpeta.
+            */
+
+            //  Función de búsqueda
+            function search (entry) {
+                //  Iteración que analiza todas las entradas
+                for (var i = 0; i < entry.contents.length; i ++) {
+                    var e = entry.contents[i],
+                        s = dir == true ? e.index == index : parseInt(e.name) == index;
+
+                    //  Si la entrada es de la lección actual, tiene el número de índice buscado
+                    if (e.track == savedData.lessonActual && s) {
+                        //  Se consigue la entrada deseada y se termina la función
+                        entryTrack = e;
+                        break;
+                    }
+
+                    //  Si no se ha encontrado nada, se analiza el siguiente nivel de ficheros
+                    if (e.type == "dir")
+                        search(e);
+                }
+            }
+
+            //  Llama a la búsqueda empezando con la carpeta raíz
+            search(this.getEntry("~"));
+
+            //  Resultado: si se encontró da el objecto, de lo contrario es nulo
+            return entryTrack;
         },
 
         write: function (text) {
@@ -467,18 +505,6 @@
                     dirTracking(entry);
                 }
             }
-        },
-
-        //  De http://geniuscarrier.com/copy-object-in-javascript/
-        copy: function (oldObj) {
-            var newObj = oldObj;
-            if (oldObj && typeof oldObj === 'object') {
-                newObj = Object.prototype.toString.call(oldObj) === "[object Array]" ? [] : {};
-                for (var i in oldObj) {
-                    newObj[i] = this.copy(oldObj[i]);
-                }
-            }
-            return newObj;
         },
 
         _createLink: function (entry, str) {
