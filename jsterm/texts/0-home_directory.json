@@ -6,29 +6,21 @@
     "contents": [{
         "name": "README",
         "type": "text",
-        "visible": true,
-        "permission": true,
         "description": "Acerca de CLIteratura.",
         "contents": "╔═╗╦  ╦┌┬┐┌─┐┬─┐┌─┐┌┬┐┬ ┬┬─┐┌─┐<br />║  ║  ║ │ ├┤ ├┬┘├─┤ │ │ │├┬┘├─┤<br />╚═╝╩═╝╩ ┴ └─┘┴└─┴ ┴ ┴ └─┘┴└─┴ ┴<br /><br />Aprende el uso básico de la interfaz de línea de comandos (<i>Command-line interface</i>) con obras literarias.<br /><br />CLIteratura es un pequeño proyecto que intenta acercar al uso de interfaces de línea de comandos a personas que tienen ninguna o poca relación con el ámbito informático.<br /><br />Mediante el contacto con algo más conocido, como son los textos literarios, especialmente el cuento o la novela, se busca habituar al usuario general con la sintaxis y el uso de la terminal.<br /><br />El objetivo de esto no es que los los usuarios abandonen las interfaces gráficas y empiecen a ser <i>hackers-ninjas</i>, sino algo más elemental: que nos familiaricemos con las herramientas que ya forman parte de nuestro día a día; a saber, las tecnologías de la información.<br /><br />Desmitificando el ámbito informático como algo solo accesible para unos cuantos es como se desea contribuir para que el usuario/leyente por lo menos reflexione sobre su habitual carácter de consumidor de <i>hardware</i> y de <i>software</i>, fomentando así un proceso de empoderamiento ante algunas de las herramientas más importantes y menos comprendidas de la actualidad.<br /><br />---<br /><br />La base para este proyecto es <a href=\"https://github.com/clarkduvall/jsterm\" target=\"_blank\">jsterm</a>, ¡gracias por compartir el código!<br /><br />Todos los archivos de CLIteratura están disponibles <a href=\"https://github.com/NikaZhenya/CLIteratura\" target=\"_blank\">aquí (haz clic)</a>."
     },{
         "name": "CLI.txt",
         "type": "text",
-        "visible": true,
-        "permission": true,
         "description": "¿Qué es la CLI?",
         "contents": "<b>¿Qué es la CLI?</b><br /><br />La interfaz de línea de comandos (CLI por su acrónimo en inglés) posibilita dar instrucciones a un programa por medio de texto. Antes de que existieran las interfaces gráficas, como el uso de ventanas, los usuarios solamente utilizaban un teclado y un monitor para usar las computadoras, lo que se conocía como «terminal» o «consola».<br /><br />Históricamente la «terminal» era este dispositivo físico y la «consola», un tipo específico de terminal que se utilizaba para comunicarse con el sistema operativo en el nivel más bajo posible, es decir, sin la necesidad de una configuración previa para poder utilizar la computadora.<br /><br />En la actualidad la terminal y la consola pasaron a ser un programa, un <i>software</i>, que se ejecuta en cualquier sistema operativo como Linux, Mac OS o Windows. Es por esto que cuando hablamos de «terminal» o «consola» de manera puntual hacemos referencia a emuladores, ¡porque dejaron de ser dispositivos físicos!<br /><br />Al ser emuladores que se comunican directamente con el sistema operativo, precisan de una interfaz que interprete las órdenes del usuario. Esto se conoce como «<i>shell</i>» o intérprete de comandos. Mediante este <i>software</i> es como se hace posible acceder a los servicios del sistema operativo. Ejemplos de «<i>shell</i>» son cmd.exe o PowerShell para Windows, o bash para Linux y Mac OS.<br /><br />Cabe resaltar que un «<i>shell</i>» no necesariamente necesita ser una CLI, sino que también se puede dar en forma de interfaz gráfica. Un buen ejemplo de esto son los entornos de escritorio de cualquier sistema operativo. Lo relevante aquí es que un «<i>shell</i>» mediante una terminal es más veloz que uno gráfico, ya que utiliza menos recursos del sistema.<br /><br />Lo que ahora estás viendo es un simulador de una terminal que está ejecutando bash, por mucho uno de los intérpretes de órdenes más populares, el cual utiliza una interfaz de línea de comandos para acceder a los servicios del sistema operativo. Al ser un simulador, <b>no debes de preocuparte por que le pase algo a tu computadora</b>, todo queda acotado en esta pestaña de tu explorador…<br /><br />¿Confundido por tanta terminología? ¡No te preocupes!, incluso en el ámbito de las tecnologías de la información los términos «CLI», «terminal», «consola», «<i>shell</i>» y «bash» tienden a usarse como sinónimos. Solo vale la pena recordar que «estrictamente» no lo son…<br /><br />---<br /><br />Fuentes:<br /><br />-<a href=\"https://goo.gl/22Pe4V\" target=\"_blank\">https://goo.gl/22Pe4V</a><br /><br />-<a href=\"https://es.wikipedia.org/wiki/Interfaz_de_l%C3%ADnea_de_comandos\" target=\"_blank\">https://es.wikipedia.org/wiki/Interfaz_de_l%C3%ADnea_de_comandos</a><br /><br />-<a href=\"https://es.wikipedia.org/wiki/Shell_(inform%C3%A1tica)\" target=\"_blank\">https://es.wikipedia.org/wiki/Shell_(inform%C3%A1tica)</a><br /><br />-<a href=\"https://es.wikipedia.org/wiki/Bash\" target=\"_blank\">https://es.wikipedia.org/wiki/Bash</a>"
     },{
         "name": "jsterm",
         "type": "exec",
-        "visible": true,
-        "permission": true,
         "description": "Conoce el proyecto base para CLIteratura.",
         "contents": "https://github.com/clarkduvall/jsterm"
     },{
         "name": "tux.png",
         "type": "img",
-        "visible": true,
-        "permission": true,
         "description": "Tux es el nombre de la mascota oficial de Linux.",
         "contents": "/img/penguin.png"
     }]

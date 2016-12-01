@@ -14,9 +14,11 @@
 
 (function () {
     //  Ayudará para las versiones móbiles para ver si el input está en focus y para detectar un dispositivo móvil
-    var onFocus,
+    var all,
+        onFocus,
         mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
         android = /Android/i.test(navigator.userAgent),
+        savedData = {},
         wait = true,
         promptStart = true,
         lessons = ["jsterm/texts/1-lesson01.json"];
@@ -28,7 +30,7 @@
         console.log(localStorage);
 
     if (typeof Object.create !== 'function') {
-        Object.create = function(o) {
+        Object.create = function (o) {
             function F() {}
             F.prototype = o;
             return new F();
@@ -36,7 +38,7 @@
     }
 
     if (!Function.prototype.bind) {
-        Function.prototype.bind = function(oThis) {
+        Function.prototype.bind = function (oThis) {
             if (typeof this !== "function") {
                 // closest thing possible to the ECMAScript 5 internal IsCallable function
                 throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
@@ -73,7 +75,7 @@
     };
 
     var Terminal = {
-        init: function(config, fs, commands, cb) {
+        init: function (config, fs, commands, cb) {
             this._queue = [];
             this._history = [];
             this._historyIndex = -1;
@@ -81,6 +83,8 @@
 
             if (commands)
                 this.loadCommands(commands);
+
+
             if (fs)
                 this.loadFS(fs, cb);
             else if (cb)
@@ -88,9 +92,9 @@
         },
 
         //  Llama a cargar los contenidos
-        loadFS: function(name, cb) {
+        loadFS: function (name, cb) {
             //  Corresponde a la función «loadFS» que está en la línea 60+
-            loadFS(name, function(responseText) {
+            loadFS(name, function (responseText) {
                 var t = this;
 
                 //  El valor «this» se guarda en «a» para usarlo en el la función «loadFS» que está adentro del loop
@@ -102,30 +106,38 @@
                     var iF = i;
 
                     //  Llama a cargar las lecciones
-                    loadFS (lessons[i], function(responseText) {
-                        //  Agrega las lecciones en la parte de los contenidos del directorio principal
-                        t.fs.contents.push(JSON.parse(responseText));
+                    loadFS (lessons[i], function (responseText) {
+                        var lessonObj = JSON.parse(responseText),
+                            exists = false;
+
+                        t.fs.contents.push(lessonObj);
 
                         //  Si ya se trata de la última lección, se añade todo y se inicia la ejecución de comandos
-                        if (iF == lessons.length - 1) {
-                            t._addDirs(t.fs, t.fs);
-                            cb && cb();
-                        }
+                        if (iF == lessons.length - 1)
+                            t.finishLoad(t, t.fs, cb);
                     });
                 }
             }.bind(this));
         },
 
-        loadCommands: function(commands) {
+        loadCommands: function (commands) {
             this.commands = commands;
             this.commands._terminal = this;
         },
 
-        loadConfig: function(config) {
+        loadConfig: function (config) {
             this.config = config;
         },
 
-        begin: function(element) {
+        finishLoad: function (t, a, cb) {
+            all = t.copy(a);
+            t._addDirs(a, a);
+            cb && cb();
+
+
+        },
+
+        begin: function (element) {
             var parentElement = element || document.body;
 
             //  Valida el path si está guardado
@@ -146,7 +158,7 @@
                 }
             }
 
-            window.onkeydown = function(e) {
+            window.onkeydown = function (e) {
                 //  Solo es posible si no hay espera
                 if (!wait) {
                     var key = (e.which) ? e.which : e.keyCode;
@@ -159,7 +171,7 @@
                 }
             }.bind(this);
 
-            window.onkeypress = function(e) {
+            window.onkeypress = function (e) {
                 //  Solo es posible si no hay espera
                 if (!wait) {
                     this._typeKey((e.which) ? e.which : e.keyCode);
@@ -174,6 +186,31 @@
                 this.cwd = this.getEntry(localStorage.path);
             }
 
+            //  Para poner las lecciones en el estado en como se dejaron
+            if (localStorage.tracked !== undefined) {
+                var trackers = JSON.parse(localStorage.tracked),
+                    k = Object.keys(trackers);
+
+                //  Se itera cada una de las llaves de los trackers, que es igual a "lesson" + N
+                for (var i = 0; i < k.length; i++) {
+                    l = trackers[k[i]];
+
+                    //  Se itera cada uno de los valores de la llave, que es igual a los archivos ya vistos
+                    for (var j = 0; j < l.length; j++) {
+                        //  Si no existe la llave para los trackers, se crea
+                        if (savedData.tracked === undefined)
+                            savedData.tracked = {};
+
+                        //  Si no existe la llave para cada lección, se crea
+                        if (savedData.tracked[k[i]] === undefined)
+                            savedData.tracked[k[i]] = [];
+
+                        //  Se agrega el valor y se llama a la función para desatar las acciones que ya se habían desatado
+                        savedData.tracked[k[i]].push(l[j]);
+                        particularFunction(parseInt(k[i].replace("lesson", "")), true);
+                    }
+                }
+            }
 
             this.returnHandler = this._execute;
             this._prompt();
@@ -185,7 +222,7 @@
             return this.dirString(this.cwd);
         },
 
-        dirString: function(d) {
+        dirString: function (d) {
             var dir = d,
                 dirStr = '';
 
@@ -197,7 +234,7 @@
         },
 
         //  Obtiene el contenido del fichero a utilizar
-        getEntry: function(path) {
+        getEntry: function (path) {
             var entry,
                 parts;
 
@@ -218,7 +255,7 @@
                 path = path.substring(1, path.length);
             }
 
-            parts = path.split('/').filter(function(x) {
+            parts = path.split('/').filter(function (x) {
                 return x;
             });
 
@@ -231,7 +268,7 @@
             return entry;
         },
 
-        write: function(text) {
+        write: function (text) {
             var output = this.stdout();
 
             if (!output)
@@ -245,7 +282,7 @@
         },
 
         //  Escribe los comandos
-        typeCommand: function(command, cb) {
+        typeCommand: function (command, cb) {
             var that = this;
 
             //  Evitará que se pueda teclear mientras se escribe
@@ -267,23 +304,29 @@
         },
 
         //  Permite el autocompletar
-        tabComplete: function(text) {
+        tabComplete: function (text) {
             var parts = text.replace(/^\s+/, '').split(' '),
-                matches = [];
+                matches = [],
+                fullPath,
+                pathParts,
+                last,
+                dir;
+
             if (!parts.length)
                 return [];
 
             if (parts.length == 1) {
-                // TODO: Combine with below.
-                var pathParts = parts[0].replace(/[\/]+/, '/').split('/'),
-                    last = pathParts.pop(),
-                    dir = (pathParts.length > 0) ? this.getEntry(pathParts.join('/')) : this.cwd,
-                    n,
-                    fullPath,
-                    last,
-                    dir;
+                pathParts = parts[0].replace(/[\/]+/, '/').split('/');
+                last = pathParts.pop();
+                dir = (pathParts.length > 0) ? this.getEntry(pathParts.join('/')) : this.cwd;
+
+                //  Si no se ingresó nada ya no continúa
+                if (pathParts == "")
+                    return [];
 
                 if (dir) {
+                    var n;
+
                     for (var i in dir.contents) {
                         n = dir.contents[i].name;
                         if (n.startswith(last) && !n.startswith('..') && n != last) {
@@ -306,7 +349,8 @@
                 last = pathParts.pop();
                 dir = (pathParts.length > 0) ? this.getEntry(pathParts.join('/')) : this.cwd;
 
-                if (!dir)
+                //  Si no se ingresó nada ya no continúa
+                if (!dir || last == "")
                     return [];
 
                 for (var i in dir.contents) {
@@ -325,7 +369,7 @@
             return matches;
         },
 
-        enqueue: function(command) {
+        enqueue: function (command) {
             this._queue.push(command);
 
             return this;
@@ -336,7 +380,7 @@
             window.scrollTo(0, document.body.scrollHeight);
         },
 
-        parseArgs: function(argv) {
+        parseArgs: function (argv) {
             var args = [],
                 filenames = [],
                 opts;
@@ -357,7 +401,7 @@
         },
 
         //  Añade el enlace según su tipo
-        writeLink: function(e, str) {
+        writeLink: function (e, str) {
             this.write('<span class="' + e.type + '">' + this._createLink(e, str) +
                 '</span>');
         },
@@ -425,7 +469,19 @@
             }
         },
 
-        _createLink: function(entry, str) {
+        //  De http://geniuscarrier.com/copy-object-in-javascript/
+        copy: function (oldObj) {
+            var newObj = oldObj;
+            if (oldObj && typeof oldObj === 'object') {
+                newObj = Object.prototype.toString.call(oldObj) === "[object Array]" ? [] : {};
+                for (var i in oldObj) {
+                    newObj[i] = this.copy(oldObj[i]);
+                }
+            }
+            return newObj;
+        },
+
+        _createLink: function (entry, str) {
             var cls = 'class="' + entry.name.replace(/\s+/g, '') + '"';
 
             function typeLink(text, link) {
@@ -454,7 +510,7 @@
             }.bind(this));
         },
 
-        _dirNamed: function(name, dir) {
+        _dirNamed: function (name, dir) {
             for (var i in dir) {
                 if (dir[i].name == name) {
                     if (dir[i].type == 'link')
@@ -466,8 +522,8 @@
             return null;
         },
 
-        _addDirs: function(curDir, parentDir) {
-            curDir.contents.forEach(function(entry, i, dir) {
+        _addDirs: function (curDir, parentDir) {
+            curDir.contents.forEach(function (entry, i, dir) {
                 if (entry.type == 'dir')
                     this._addDirs(entry, curDir);
             }.bind(this));
@@ -483,7 +539,7 @@
             });
         },
 
-        _toggleBlinker: function(timeout) {
+        _toggleBlinker: function (timeout) {
             var blinker = this.div.querySelector('#blinker'),
                 stdout;
 
@@ -506,7 +562,7 @@
             }
         },
 
-        _resetID: function(query) {
+        _resetID: function (query) {
             var element = this.div.querySelector(query);
 
             if (element)
@@ -602,7 +658,7 @@
             this.scroll();
         },
 
-        _typeKey: function(key) {
+        _typeKey: function (key) {
             var stdout = this.stdout();
 
             if (!stdout || key < 0x20 || key > 0x7E || key == 13 || key == 9)
@@ -611,7 +667,7 @@
             stdout.innerHTML += String.fromCharCode(key);
         },
 
-        _handleSpecialKey: function(key, e) {
+        _handleSpecialKey: function (key, e) {
             var stdout = this.stdout(),
                 parts,
                 pathParts;
@@ -661,10 +717,10 @@
             }
         },
 
-        _execute: function(fullCommand) {
+        _execute: function (fullCommand) {
             var output = document.createElement('div'),
                 stdout = document.createElement('span'),
-                parts = fullCommand.split(' ').filter(function(x) {
+                parts = fullCommand.split(' ').filter(function (x) {
                     return x;
                 }),
                 command = parts[0],
@@ -708,7 +764,7 @@
         }
     };
 
-    String.prototype.startswith = function(s) {
+    String.prototype.startswith = function (s) {
         return this.indexOf(s) == 0;
     }
 
@@ -731,7 +787,7 @@
             .begin();
     });
 
-    window.typeCommand = function(command) {
+    window.typeCommand = function (command) {
         term.typeCommand(command);
     };
 

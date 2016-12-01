@@ -27,18 +27,18 @@ div#jsterm {
 
 /* Prompt */
 
-div#jsterm .host, div#jsterm .host a {
-    color: #5555ff;
+div#jsterm .user, div#jsterm .user a {
+    color: red;
     font-weight: bold;
 }
 
-div#jsterm .user, div#jsterm .user a {
-    color: #ff5555;
+div#jsterm .host, div#jsterm .host a {
+    color: blue;
     font-weight: bold;
 }
 
 div#jsterm .cwd, div#jsterm .cwd a {
-    color: #ffff55;
+    color: green;
     font-weight: bold;
 }
 
@@ -146,4 +146,28 @@ div#jsterm .img, div#jsterm .img a {
 
 .magnify {
     font-size: 2em;
+}
+
+/* Texto de desbloqueo */
+
+.desbloqueo {
+    display: block;
+    margin-top: 1em;
+    color: yellow;
+    font-weight: bold;
+    /* https://stackoverflow.com/questions/13955163/imitating-a-blink-tag-with-css3-animations#16012979 */
+    animation: blink-animation 1s steps(5, start) infinite;
+    -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
 }

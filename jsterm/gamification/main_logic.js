@@ -1,5 +1,4 @@
 var active = true,
-    savedData = {},
     lessonActual,
     timeElapsed;
 
@@ -20,7 +19,9 @@ function blur () {
 }
 
 //  Llama a la lógica particular de la lección
-function particularFunction (i) {
+function particularFunction (i, init) {
+    init = init || false;
+
     var name;
 
     //  Se agrega un cero si es menor a 10
@@ -30,7 +31,7 @@ function particularFunction (i) {
         name = "lesson" + i;
 
     //  Se llama a la función
-    window[name]();
+    window[name](init);
 }
 
 //  Guarda la fecha
@@ -59,8 +60,6 @@ function saveDate () {
 
 //  Inicia un conteo para medir cuánto tiempo se pasa en una lección
 function timer () {
-    console.log(localStorage.times);
-
     //  Se suma tiempo solo si la ventana está activa
     if (active) {
         var lesson = parseInt(lessonActual.name.split("-")[0]);
@@ -201,5 +200,23 @@ function fileTracking (entry) {
                 }
             }
         }
+    }
+}
+
+//  Cambia permisos
+function changePermission (entry, init, cVisible) {
+    var term = COMMANDS._terminal;
+
+    cVisible = cVisible || false;
+    init = init || false;
+
+    // console.log(entry);
+    // console.log(init);
+    // console.log(cVisible);
+    // console.log(term.getCWD());
+
+    if (!init) {
+        console.log("ASd");
+        term.write(desbloqueo);
     }
 }
