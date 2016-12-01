@@ -205,7 +205,7 @@
 
                         //  Se agrega el valor y se llama a la función para desatar las acciones que ya se habían desatado
                         savedData.tracked[k[i]].push(l[j]);
-                        particularFunction(parseInt(k[i].replace("lesson", "")), true);
+                        ml.particularFunction(parseInt(k[i].replace("lesson", "")), true);
                     }
                 }
             }
@@ -502,7 +502,7 @@
                 //  Si se quedó adentro de una lección, reinicia el timer
                 if (localStorage.lessonActual !== undefined) {
                     var entry = this.getEntry(localStorage.path);
-                    dirTracking(entry);
+                    ml.dirTracking(entry);
                 }
             }
         },
@@ -625,7 +625,7 @@
                         hour12;
 
                     //  Obitene la fecha actual
-                    saveDate();
+                    ml.saveDate();
                     actualDate = JSON.parse(localStorage.date);
 
                     //  Obtiene el nombre del día de la semana

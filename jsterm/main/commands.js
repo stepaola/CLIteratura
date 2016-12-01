@@ -63,7 +63,7 @@ COMMANDS.cat = function(argv, cb) {
             this._terminal.write(entry.contents);
 
             //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
-            fileTracking(entry);
+            ml.fileTracking(entry);
         }
 
         //  Crea un salto de línea si no es el último argumento ingresado
@@ -100,7 +100,7 @@ COMMANDS.cd = function(argv, cb) {
         this._terminal.cwd = entry;
 
         //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
-        dirTracking(entry);
+        ml.dirTracking(entry);
     }
 
     //  Llama a un bound()
@@ -150,7 +150,7 @@ COMMANDS.gimp = function(argv, cb) {
             this._terminal.write('<br/>' + entry.caption);
 
         //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
-        fileTracking(entry);
+        ml.fileTracking(entry);
     }
 
     //  Llama a un bound()
@@ -210,14 +210,14 @@ COMMANDS.login = function(argv, cb) {
             if (user != "") {
                 savedData.user = user;
                 localStorage.user = user;
-                saveDate();
+                ml.saveDate();
             }
 
             //  Se guarda si no está vacío
             if (password != "") {
                 savedData.password = password;
                 localStorage.password = password;
-                saveDate();
+                ml.saveDate();
             }
 
             //  Llama a un bound()
