@@ -1,3 +1,10 @@
+* [Español](#español)
+* [English](#english)
+
+---
+
+# Español
+
     ╔═╗╦  ╦┌┬┐┌─┐┬─┐┌─┐┌┬┐┬ ┬┬─┐┌─┐
     ║  ║  ║ │ ├┤ ├┬┘├─┤ │ │ │├┬┘├─┤
     ╚═╝╩═╝╩ ┴ └─┘┴└─┴ ┴ ┴ └─┘┴└─┴ ┴
@@ -23,11 +30,48 @@ sobre su habitual carácter de consumidor de *hardware* y de *software*,
 fomentando así un proceso de empoderamiento ante algunas de las herramientas más
 importantes y menos comprendidas de la actualidad.
 
-# Lecciones
+## Lecciones
 
 1. «Casa tomada» de Julio Cortázar: Aprende a moverte entre ficheros y ver sus contenidos.
 
-# Agradecimientos
+## Agradecimientos
 
-La base para este proyecto es [jsterm](https://github.com/clarkduvall/jsterm),
+El núcleo de este proyecto es [jsterm](https://github.com/clarkduvall/jsterm),
 ¡gracias por compartir el código!
+
+---
+---
+---
+
+# English
+
+    ╔═╗╦  ╦┌┬┐┌─┐┬─┐┌─┐┌┬┐┬ ┬┬─┐┌─┐
+    ║  ║  ║ │ ├┤ ├┬┘├─┤ │ │ │├┬┘├┤
+    ╚═╝╩═╝╩ ┴ └─┘┴└─┴ ┴ ┴ └─┘┴└─└─┘
+
+Learn the basics of the command-line interface with literature.
+
+CLIterature is a small project that aims to give a basic introduction to the command-line
+interface to the people who have little or no relationship with tech field.
+
+By the contact with something more common, like literature writings, mainly stories
+or novels, is how it seeks to teach the sintaxis and use of the terminal.
+
+The purpose is not to sought the users to abandon the graphical interfaces and become
+hackers-ninjas. The intention is something simplier: familiarize us with the tools
+that are part of our daily life; namely, the information technology.
+
+By debunking the tech field as something only accessible for a few people is how
+it contributes for the user/reader to ponder at least about their habitual character
+of hardware and software consumer and begin an empowerment process of some of the
+most important and less know tools of our time.
+
+## Lessons
+
+1. “House Taken Over” by Julio Cortázar: Learn how to move between directories and
+how to see files contents.
+
+## Acknowledgment
+
+The kernel of this project is [jsterm](https://github.com/clarkduvall/jsterm), thanks
+for sharing the code!

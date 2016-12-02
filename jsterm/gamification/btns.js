@@ -5,7 +5,7 @@ var wait = true,    //  También afecta a jsterm.js para evitar la escritura
 //  Creación del botón de ayuda
 help = document.createElement("div");
 help.id = "help";
-help.innerHTML = "<p>" + ayudaBoton + "</p>";
+help.innerHTML = "<p>" + loc.ale(aux.helpBtn) + "</p>";
 document.body.appendChild(help);
 
 help.addEventListener("click", function () {
@@ -17,12 +17,12 @@ help.addEventListener("click", function () {
 //  Creación del botón de limpieza
 clear = document.createElement("div");
 clear.id = "clear";
-clear.innerHTML = "<p>" + limpiarBoton + "</p>";
+clear.innerHTML = "<p>" + loc.ale(aux.clearBtn) + "</p>";
 document.body.appendChild(clear);
 
 clear.addEventListener("click", function () {
     //  Si se confirma y la lógica principal ya está activa, se limpian los datos
-    if (confirm(limpiarMensaje))
+    if (confirm(loc.ale(aux.clearPopup)))
         if (typeof ml !== "undefined" && !wait)
             ml.clear();
 });

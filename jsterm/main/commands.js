@@ -60,7 +60,7 @@ COMMANDS.cat = function(argv, cb) {
             this._terminal.write('cat: can\'t open ' + filename + ': Permission denied');
         //  Si se trata de un archivo existente, muestra su contenido
         else {
-            this._terminal.write(entry.contents);
+            this._terminal.write(loc.ale(entry));
 
             //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
             ml.fileTracking(entry);
@@ -139,7 +139,7 @@ COMMANDS.gimp = function(argv, cb) {
         this._terminal.write('gimp: can\'t open ' + filename + ': Permission denied');
     //  Si se trata de una imagen con permiso de acceso
     else {
-        this._terminal.write('<img src="jsterm' + entry.contents + '"/>');
+        this._terminal.write('<img src="jsterm' + loc.ale(entry) + '"/>');
         imgs = this._terminal.div.getElementsByTagName('img');
         imgs[imgs.length - 1].onload = function() {
             this.scroll();
@@ -147,7 +147,7 @@ COMMANDS.gimp = function(argv, cb) {
 
         //  Si tiene la propiedad «caption» se escribe abajo de la imagen
         if ('caption' in entry)
-            this._terminal.write('<br/>' + entry.caption);
+            this._terminal.write('<br/>' + loc.ale(entry, "caption"));
 
         //  Para la lógica lúdica se precisa rastrear el movimiento del usuario
         ml.fileTracking(entry);
@@ -159,7 +159,7 @@ COMMANDS.gimp = function(argv, cb) {
 
 COMMANDS.help = function(argv, cb) {
     //  Escribe la primera parte de la ayuda
-    this._terminal.write(ayuda1);
+    this._terminal.write(loc.ale(aux.help1));
 
     //  En este conjunto se pondrán los comandos válidos
     var cmd = [];
@@ -175,11 +175,11 @@ COMMANDS.help = function(argv, cb) {
     //  Escribe en la terminal cada uno de los comandos más su descripción
     for (var i = 0; i < cmd.length; i++) {
         var tipo = typeof cmd[i];
-        this._terminal.write('-' + cmd[i] + ': ' + comandos[cmd[i]] + '<br />');
+        this._terminal.write('-' + cmd[i] + ': ' + loc.ale(aux.cmdDescription[cmd[i]]) + '<br />');
     }
 
     //  Escribe la segunda parte de la ayuda
-    this._terminal.write(ayuda2);
+    this._terminal.write(loc.ale(aux.help2));
 
     //  Llama a un bound()
     cb();
@@ -248,7 +248,7 @@ COMMANDS.ls = function(argv, cb) {
         //  Si hay un argumento «-l» se escribe de manera extendida
         if (args.indexOf('l') > -1) {
             if ('description' in e)
-                this.write(' - ' + e.description);
+                this.write(' - ' + loc.ale(e, "description"));
             this.write('<br>');
 
         //  Si no hay argumento «-l» se escribe de manera compacta
@@ -281,7 +281,7 @@ COMMANDS.ls = function(argv, cb) {
                 //  Enlista los contenidos, contemplando o no el argumento «-a», solo si la visibilidad no es falsa
                 if (args.indexOf('a') > -1 || e.name[0] !== '.')
                     if (e.visible != false)
-                        writeEntry(e, dirStr + '/' + e.name);
+                        writeEntry(e, dirStr + '/' + loc.ale(e, "name"));
             }
         }
     //  Si se trata de un archivo
@@ -310,7 +310,7 @@ COMMANDS.ls = function(argv, cb) {
 //             cb();
 //         }
 //     }.bind(this._terminal);
-//     this._terminal.write('[sudo] password for ' + this._terminal.config.username + ': ');
+//     this._terminal.write('[sudo] password for ' + loc.ale(aux.defaultUser) + ': ');
 //     this._terminal.scroll();
 // }
 
@@ -377,7 +377,7 @@ COMMANDS.tree = function(argv, cb) {
 
             //  Escribe la línea de texto final más el nombre del archivo con enlace
             term.write(str);
-            term.writeLink(entry, term.dirString(dir) + '/' + entry.name);
+            term.writeLink(entry, term.dirString(dir) + '/' + loc.ale(entry, "name"));
             term.write('<br>');
 
             //  Va contando las carpetas y archivos
@@ -399,7 +399,7 @@ COMMANDS.tree = function(argv, cb) {
     dirStr = this._terminal.dirString(firstDir);
 
     //  Lo escribe con vínculo añadido y salto de línea
-    this._terminal.write("<span class=\"dir\"><a href=\"javascript:void(0)\" class=\"" + firstDir.name + "\" onclick=\"typeCommand('cd .')\">.</a></span>");
+    this._terminal.write("<span class=\"dir\"><a href=\"javascript:void(0)\" class=\"" + loc.ale(firstDir, "name") + "\" onclick=\"typeCommand('cd .')\">.</a></span>");
     this._terminal.write('<br>');
 
     //  Crea el árbol

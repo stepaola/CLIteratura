@@ -159,7 +159,7 @@ div#jsterm .img, div#jsterm .img a {
 
 /* Textos de desbloqueo y de fin */
 
-.desbloqueo, .fin {
+.unlocked, .finished {
     display: block;
     margin-top: 1em;
     color: yellow;
@@ -168,7 +168,7 @@ div#jsterm .img, div#jsterm .img a {
     -webkit-animation: blink-animation 1s steps(5, start) infinite;
 }
 
-.fin {
+.finished {
     text-align: center;
 }
 

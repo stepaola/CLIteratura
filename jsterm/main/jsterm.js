@@ -19,11 +19,12 @@
         android = /Android/i.test(navigator.userAgent),
         savedData = {},
         promptStart = true,
+        initialization = true,
         lessons = ["jsterm/texts/1-lesson01.json"];
 
     //  Se despliega una alerta si no es posible guardar el progreso
     if (typeof(Storage) === "undefined")
-        alert(noLS);
+        alert(loc.ale(aux.noLS));
     else
         console.log(localStorage);
 
@@ -224,7 +225,7 @@
                 dirStr = '';
 
             while (this._dirNamed('..', dir.contents).contents !== dir.contents) {
-                dirStr = '/' + dir.name + dirStr;
+                dirStr = '/' + loc.ale(dir, "name") + dirStr;
                 dir = this._dirNamed('..', dir.contents);
             }
             return '~' + dirStr;
@@ -257,7 +258,7 @@
             });
 
             for (var i = 0; i < parts.length; ++i) {
-                entry = this._dirNamed(parts[i], entry.contents);
+                entry = this._dirNamed(parts[i], loc.ale(entry));
                 if (!entry)
                     return null;
             }
@@ -284,8 +285,8 @@
             function search (entry) {
                 //  Iteración que analiza todas las entradas
                 for (var i = 0; i < entry.contents.length; i ++) {
-                    var e = entry.contents[i],
-                        s = dir == true ? e.index == index : parseInt(e.name) == index;
+                    var e = loc.ale(entry)[i],
+                        s = dir == true ? e.index == index : parseInt(loc.ale(e, "name")) == index;
 
                     //  Si la entrada es de la lección actual, tiene el número de índice buscado
                     if (e.track == al && s) {
@@ -323,29 +324,35 @@
 
         //  Escribe los comandos
         typeCommand: function (command, cb, callback) {
-            var that = this;
+            //  Si no se está introduciendo nada de manera automática
+            if (!wait || initialization) {
+                var that = this;
 
-            //  Evitará que se pueda teclear mientras se escribe
-            wait = true;
+                //  Permite la primera ejecución pero impide otras si se está escribiendo
+                initialization = false;
 
-            (function type(i) {
-                if (i === command.length) {
-                    //  Finaliza de escribir, por lo que se vuelve a habilitar el teclado
-                    wait = false;
+                //  Evitará que se pueda teclear mientras se escribe
+                wait = true;
 
-                    //  Ejecuta el callback si lo hay
-                    if (callback)
-                        callback();
-                        
-                    that._handleSpecialKey(13);
-                    if (cb) cb();
-                } else {
-                    that._typeKey(command.charCodeAt(i));
-                    setTimeout(function () {
-                        type(i + 1);
-                    }, 100);
-                }
-            })(0);
+                (function type(i) {
+                    if (i === command.length) {
+                        //  Finaliza de escribir, por lo que se vuelve a habilitar el teclado
+                        wait = false;
+
+                        //  Ejecuta el callback si lo hay
+                        if (callback)
+                            callback();
+
+                        that._handleSpecialKey(13);
+                        if (cb) cb();
+                    } else {
+                        that._typeKey(command.charCodeAt(i));
+                        setTimeout(function () {
+                            type(i + 1);
+                        }, 100);
+                    }
+                })(0);
+            }
         },
 
         //  Permite el autocompletar
@@ -373,7 +380,7 @@
                     var n;
 
                     for (var i in dir.contents) {
-                        n = dir.contents[i].name;
+                        n = loc.ale(dir.contents[i], "name");
                         if (n.startswith(last) && !n.startswith('..') && n != last) {
                             if (dir.contents[i].type == 'exec' && dir.contents[i].visible != false)
                                 matches.push(n + ' ');
@@ -399,7 +406,7 @@
                     return [];
 
                 for (var i in dir.contents) {
-                    n = dir.contents[i].name;
+                    n = loc.ale(dir.contents[i], "name");
                     if (n.startswith(last) && !n.startswith('..') && n != last) {
                         if (dir.contents[i].visible != false) {
                             if (dir.contents[i].type == 'dir')
@@ -481,7 +488,7 @@
                         if (e.contents[i].type == "dir") {
 
                             //  Si el nombre de un directorio existente es igual al de la parte actual del path
-                            if (e.contents[i].name == p[l]) {
+                            if (loc.ale(e.contents[i], "name") == p[l]) {
 
                                 //  Si existe un nivel más, vuelve a llamar la función y rompe la ejecución actual
                                 if (l + 1 <= p.length - 1) {
@@ -515,7 +522,7 @@
         },
 
         _createLink: function (entry, str) {
-            var cls = 'class="' + entry.name.replace(/\s+/g, '') + '"';
+            var cls = 'class="' + loc.ale(entry, "name").replace(/\s+/g, '') + '"';
 
             function typeLink(text, link) {
                 return '<a href="javascript:void(0)" ' + cls +
@@ -523,14 +530,14 @@
             };
 
             if (entry.type == 'dir' || entry.type == 'link') {
-                return typeLink('cd ' + str, entry.name);
+                return typeLink('cd ' + str, loc.ale(entry, "name"));
             } else if (entry.type == 'text') {
-                return typeLink('cat ' + str, entry.name);
+                return typeLink('cat ' + str, loc.ale(entry, "name"));
             } else if (entry.type == 'img') {
-                return typeLink('gimp ' + str, entry.name);
+                return typeLink('gimp ' + str, loc.ale(entry, "name"));
             } else if (entry.type == 'exec') {
-                return '<a href="' + entry.contents + '" target="_blank" ' + cls +
-                    ' >' + entry.name + '</a>';
+                return '<a href="' + loc.ale(entry) + '" target="_blank" ' + cls +
+                    ' >' + loc.ale(entry, "name") + '</a>';
             }
         },
 
@@ -545,7 +552,7 @@
 
         _dirNamed: function (name, dir) {
             for (var i in dir) {
-                if (dir[i].name == name) {
+                if (loc.ale(dir[i], "name") == name) {
                     if (dir[i].type == 'link')
                         return dir[i].contents;
                     else
@@ -774,7 +781,7 @@
                         this._prompt()
                     }.bind(this));
                 } else if (entry && entry.type == 'exec') {
-                    window.open(entry.contents, '_blank');
+                    window.open(loc.ale(entry), '_blank');
                     this._prompt();
                 } else {
                     this.write(command + ': command not found');
@@ -806,8 +813,8 @@
         //  Solo se muestra la primera vez
         if (localStorage.date === undefined) {
             term.enqueue('login')
-                .enqueue(usuarioDefault)
-                .enqueue(contrasenaDefault)
+                .enqueue(loc.ale(aux.defaultUser))
+                .enqueue(loc.ale(aux.defaultPassword))
                 .enqueue('cat README')
                 .enqueue('help');
         //  Muestra el README en las otras veces
@@ -831,7 +838,7 @@
         input.type = "text";
         input.id = "text-field";
         input.value = "";
-        input.placeholder = campo;
+        input.placeholder = loc.ale(aux.textField);
         input.setAttribute("autocomplete", "off");
         input.setAttribute("autocorrect", "off");
         input.setAttribute("autocapitalize", "off");
