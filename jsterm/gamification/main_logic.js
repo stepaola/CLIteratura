@@ -21,8 +21,10 @@ var ml = {
     },
 
     //  Llama a la lógica particular de la lección
-    particularFunction: function (i) {
+    particularFunction: function (i, init) {
         var name;
+
+        init = init || null;
 
         //  Se agrega un cero si es menor a 10
         if (i < 10)
@@ -31,7 +33,7 @@ var ml = {
             name = "lesson" + i;
 
         //  Se llama a la función
-        window[name]();
+        window[name](init);
     },
 
     //  Guarda la fecha
@@ -256,38 +258,14 @@ var ml = {
         entry.permission = change(entry.permission);
     },
 
-    //  Cambia permisos de varios ficheros
-    changePermissions: function (array) {
 
-        /*
-            Sistematiza la puesta de cambios de varios archivos, si seguimos el siguiente ejemplo:
-                changePermissions([[terminal.getEntryIndx(6)], [terminal.getEntryIndx(1, true), true], [terminal.getEntryIndx(1, true), false, true]]);
-            el array es:
-                [[terminal.getEntryIndx(6)], [terminal.getEntryIndx(1, true), true], [terminal.getEntryIndx(1, true), false, true]]
-            donde
-                terminal.getEntryIndx(i) obtiene un archivo o
-                terminal.getEntryIndx(i, bool) adquiere una carpeta según su índice,
-            y donde cada cada elemento manda a llamar:
-                1. [terminal.getEntryIndx(6)] = changePermission(archivo);
-                2. [terminal.getEntryIndx(1, true), true] = changePermission(carpeta, true);
-                3. [terminal.getEntryIndx(1, true), false, true]] = changePermission(carpeta, false true);
-        */
+    //  Cambia permisos de varios ficheros a través del índice
+    changePermissionsIndx: function (lesson, min, max, dir, cv, cp) {
 
         //  Itera cada uno de los elementos del conjunto que son igual a cada entrada a cambiar y sus opciones
-        for (var i = 0; i < array.length; i++)
-            switch (array[i].length) {
-                //  Si hubo una opción, será un «changePermission(entry, cVisible)»
-                case 2:
-                    ml.changePermission(array[i][0], array[i][1]);
-                    break;
-                //  Si hubo dos opciones, será un «changePermission(entry, cVisible, cPermission)»
-                case 3:
-                    ml.changePermission(array[i][0], array[i][1], array[i][2]);
-                    break;
-                //  Si no hubo opciones, será un «changePermission(entry)»
-                default:
-                    ml.changePermission(array[i][0]);
-            }
+        for (var i = min; i <= max; i++) {
+            ml.changePermission(ml.term.getEntryIndx(lesson, i, dir), cv, cp);
+        }
     },
 
     //  Limpia los datos

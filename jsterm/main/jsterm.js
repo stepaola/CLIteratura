@@ -205,7 +205,7 @@
 
                         //  Se agrega el valor y se llama a la función para desatar las acciones que ya se habían desatado
                         savedData.tracked[k[i]].push(l[j]);
-                        ml.particularFunction(parseInt(k[i].replace("lesson", "")));
+                        ml.particularFunction(parseInt(k[i].replace("lesson", "")), true);
                     }
                 }
             }
@@ -638,6 +638,16 @@
                         hourSrt,
                         hour12;
 
+                    //  Añade un 0 si es menor a 10
+                    function numAdd (n) {
+                        n = parseInt(n);
+
+                        if (n < 10)
+                            n = "0" + n;
+
+                        return n;
+                    }
+
                     //  Obitene la fecha actual
                     ml.saveDate();
                     actualDate = JSON.parse(localStorage.date);
@@ -679,8 +689,9 @@
                     }
 
                     //  Ingresa los datos de la restauración y último ingreso
-                    prompt.innerHTML =  '<span id="restored">  [Restored: ' + actualDate.day + '/' + actualDate.month + '/' + actualDate.year + ' ' + hour12 + ':' + actualDate.minute + ':' + actualDate.second + ' ' + hourSrt + ']</span>' +
-                                        '<span id="last-login">Last login: ' + dayStr + ' ' + monthStr + ' ' + oldDate.day + ' ' + oldDate.hour + ':' + oldDate.minute + ':' + oldDate.second + ' on console</span><br />';
+                    prompt.innerHTML =  '<span id="restored">  [Restored: ' + numAdd(actualDate.day) + '/' + numAdd(actualDate.month) + '/' + actualDate.year + ' ' + hour12 + ':' + numAdd(actualDate.minute) + ':' + numAdd(actualDate.second) + ' ' + hourSrt + ']</span>' +
+                                        '<span id="last-login">Last login: ' + dayStr + ' ' + monthStr + ' ' + actualDate.day + ' ' + numAdd(actualDate.hour) + ':' + numAdd(actualDate.minute) + ':' + numAdd(actualDate.second) + ' on console</span><br />' +
+                                        '<span id="last-login">Restored session: ' + dayStr + ' ' + monthStr + ' ' + oldDate.day + ' ' + numAdd(oldDate.hour) + ':' + numAdd(oldDate.minute) + ':' + numAdd(oldDate.second) + ' CST ' + oldDate.year + '</span><br />';
 
                     promptStart = false;
                 }
