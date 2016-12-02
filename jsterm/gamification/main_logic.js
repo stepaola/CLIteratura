@@ -116,6 +116,28 @@ var ml = {
 
     },
 
+    //  Manda a un directorio especificado
+    dirSend: function (origin, destination, callback) {
+        //  Espera un cuarto de segundo para evitar errores de escritura
+        setTimeout(function () {
+            //  Si no se está usando la terminal
+            if (!wait) {
+                //  Si la carpeta de origin no es la de destino
+                if (origin != destination) {
+                    //  Se hace cd con la ruta absoluta y se añade el callback
+                    var path = ml.term.dirString(destination);
+                    ml.term.typeCommand("cd " + path, callback);
+                //  Si es la misma, solo ejecuta el callback si lo hay
+                } else
+                    if (callback)
+                        callback();
+            //  Si se está usando la terminal, espera medio segundo para volver a llamar
+            } else {
+                ml.dirSend(origin, destination, callback);
+            }
+        }, 250);
+    },
+
     //  Rastrea carpetas
     dirTracking: function (entry) {
         var dirStr = ml.term.dirString(entry),
@@ -273,12 +295,10 @@ var ml = {
         //  Si no se está en el directorio de inicio
         if (localStorage.path != "~") {
             //  Manda al directorio de inicio para evitar que se grave el timer
-            ml.term.typeCommand("cd ~");
-
-            //  Espera medio segundo para refrescar la página
-            setTimeout(function () {
+            ml.term.typeCommand("cd ~", function () {
+                //  Cuando termina, ejecuta el refrescar
                 ml.refresh();
-            }, 500);
+            });
         }
         else
             ml.refresh();

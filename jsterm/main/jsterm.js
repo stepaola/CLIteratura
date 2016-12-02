@@ -322,7 +322,7 @@
         },
 
         //  Escribe los comandos
-        typeCommand: function (command, cb) {
+        typeCommand: function (command, cb, callback) {
             var that = this;
 
             //  Evitará que se pueda teclear mientras se escribe
@@ -332,6 +332,11 @@
                 if (i === command.length) {
                     //  Finaliza de escribir, por lo que se vuelve a habilitar el teclado
                     wait = false;
+
+                    //  Ejecuta el callback si lo hay
+                    if (callback)
+                        callback();
+                        
                     that._handleSpecialKey(13);
                     if (cb) cb();
                 } else {
