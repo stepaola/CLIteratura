@@ -1,19 +1,21 @@
 # Mapa
 
-* puerta_cancel: 1 | | *14* | 15.
-  * living: | 11 | 13.
-    * dormitorio_irene: | 10.
-    * mi_dormitorio: | 8.
-    * pasillo_estrecho: | 7.
-      * bano:
-      * cocina: | 9.
-    * puerta_roble: *6* | *12*.
-      * biblioteca: 3.
-      * comedor: 4.
-      * dormitorio_1:
-      * dormitorio_2:
-      * dormitorio_3: 2.
-      * sala: 5.
+* zaguan *14* | *15*
+    * puerta_cancel: 1 | *13*.
+      * living: *11*.
+        * dormitorio_irene: 10.
+        * mi_dormitorio: 8.
+        * pasillo_estrecho: 7.
+          * bano:
+          * cocina: 9.
+        * puerta_roble: *6* | *12*.
+            * pasillo_fondo
+              * biblioteca: 3.
+              * comedor: 4.
+              * dormitorio_1:
+              * dormitorio_2:
+              * dormitorio_3: 2.
+              * sala: *5*.
 
 # 01-inicio.txt
 

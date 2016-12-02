@@ -18,7 +18,6 @@
         mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
         android = /Android/i.test(navigator.userAgent),
         savedData = {},
-        wait = true,
         promptStart = true,
         lessons = ["jsterm/texts/1-lesson01.json"];
 
@@ -205,7 +204,7 @@
 
                         //  Se agrega el valor y se llama a la función para desatar las acciones que ya se habían desatado
                         savedData.tracked[k[i]].push(l[j]);
-                        ml.particularFunction(parseInt(k[i].replace("lesson", "")), true);
+                        ml.particularFunction(parseInt(k[i].replace("lesson", "")));
                     }
                 }
             }
@@ -267,16 +266,18 @@
         },
 
         //  Obtiene el fichero según el índice
-        getEntryIndx: function (index, dir) {
+        getEntryIndx: function (al, index, dir) {
             var entryTrack = null;
 
             /*
                 Si se trata de un archivo es posible llamarla con:
-                    getEntryIndx(i) | getEntryIndx(i, false)
+                    getEntryIndx(l, i) | getEntryIndx(l, i, false)
                 Si se trata de una carpeta es posible llamarla con:
-                    getEntryIndx(i, true)
+                    getEntryIndx(l, i, true)
                 * Es necesario espeficiar el parámetro «dir» como verdadero
                     para buscar una carpeta.
+                * El parámetro al = la lección donde se ha de buscar la entrada,
+                    permitiéndose así la repetición de índices entre lecciones.
             */
 
             //  Función de búsqueda
@@ -287,7 +288,8 @@
                         s = dir == true ? e.index == index : parseInt(e.name) == index;
 
                     //  Si la entrada es de la lección actual, tiene el número de índice buscado
-                    if (e.track == savedData.lessonActual && s) {
+                    if (e.track == al && s) {
+
                         //  Se consigue la entrada deseada y se termina la función
                         entryTrack = e;
                         break;
@@ -327,7 +329,7 @@
             wait = true;
 
             (function type(i) {
-                if (i == command.length) {
+                if (i === command.length) {
                     //  Finaliza de escribir, por lo que se vuelve a habilitar el teclado
                     wait = false;
                     that._handleSpecialKey(13);
@@ -847,14 +849,4 @@
             });
         }
     }
-
-    //  Creación del botón de ayuda
-    var help = document.createElement("div");
-    help.id = "help";
-    help.innerHTML = "<p>" + ayudaBoton + "</p>";
-    document.body.appendChild(help);
-
-    help.addEventListener("click", function () {
-        typeCommand('help');
-    })
 })();

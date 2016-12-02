@@ -7,6 +7,9 @@ window.addEventListener("ml.focus", focus);
 window.addEventListener("ml.blur", blur);
 
 var ml = {
+    //  Para usar las funciones de jsterm
+    term: COMMANDS._terminal,
+
     //  Para estipular que la ventana está activa
     focus: function () {
         active = true;
@@ -18,17 +21,8 @@ var ml = {
     },
 
     //  Llama a la lógica particular de la lección
-    particularFunction: function (i, init) {
+    particularFunction: function (i) {
         var name;
-
-        /*
-            Es grotesco que ese «init» se herede en varias funciones solo para
-            denotar cuándo es un restablecimiento de cambios después de una restauración
-            y cuándo es un nuevo cambio.
-        */
-
-        //  Falso si no se estipuló
-        init = init || false;
 
         //  Se agrega un cero si es menor a 10
         if (i < 10)
@@ -37,7 +31,7 @@ var ml = {
             name = "lesson" + i;
 
         //  Se llama a la función
-        window[name](init);
+        window[name]();
     },
 
     //  Guarda la fecha
@@ -124,8 +118,7 @@ var ml = {
 
     //  Rastrea carpetas
     dirTracking: function (entry) {
-        var term = COMMANDS._terminal,
-            dirStr = term.dirString(entry),
+        var dirStr = ml.term.dirString(entry),
             dirs = dirStr.split("/"),
             dirPath = "";
 
@@ -136,7 +129,7 @@ var ml = {
 
         //  Busca la lección en la que se encuentra
         dirs.forEach(function (dir) {
-            var e = term.getEntry(dirPath + dir);
+            var e = ml.term.getEntry(dirPath + dir);
 
             //  Si en la ruta al directorio existe un fichero padre que es una lección, se estipula como la lección actual
             if (e.lesson == true && lessonActual != e) {
@@ -210,13 +203,10 @@ var ml = {
     },
 
     //  Cambia permisos
-    changePermission: function (entry, init, cVisible, cPermission) {
-        var term = COMMANDS._terminal;
-
+    changePermission: function (entry, cVisible, cPermission) {
         //  Establece el valor de las variables según si se estipularon o no
         cPermission = cPermission === undefined ? null : cPermission;
         cVisible = cVisible === undefined ? null : cVisible;
-        init = init || false;
 
         //  Función para el cambio
         function change (bool) {
@@ -242,44 +232,64 @@ var ml = {
         //  Realiza los cambios según la llave
         entry.visible = change(entry.visible);
         entry.permission = change(entry.permission);
-
-        //  Se muestra el texto de desbloqueo si no se trata de una función al restaurar la sesión
-        if (!init) {
-            term.write(desbloqueo);
-        }
     },
 
     //  Cambia permisos de varios ficheros
-    changePermissions: function (array, init) {
+    changePermissions: function (array) {
 
         /*
             Sistematiza la puesta de cambios de varios archivos, si seguimos el siguiente ejemplo:
-                changePermissions([[term.getEntryIndx(6)], [term.getEntryIndx(1, true), true], [term.getEntryIndx(1, true), false, true]], init);
+                changePermissions([[terminal.getEntryIndx(6)], [terminal.getEntryIndx(1, true), true], [terminal.getEntryIndx(1, true), false, true]]);
             el array es:
-                [[term.getEntryIndx(6)], [term.getEntryIndx(1, true), true], [term.getEntryIndx(1, true), false, true]]
+                [[terminal.getEntryIndx(6)], [terminal.getEntryIndx(1, true), true], [terminal.getEntryIndx(1, true), false, true]]
             donde
-                term.getEntryIndx(i) obtiene un archivo o
-                term.getEntryIndx(i, bool) adquiere una carpeta según su índice,
+                terminal.getEntryIndx(i) obtiene un archivo o
+                terminal.getEntryIndx(i, bool) adquiere una carpeta según su índice,
             y donde cada cada elemento manda a llamar:
-                1. [term.getEntryIndx(6)] = changePermission(archivo, init);
-                2. [term.getEntryIndx(1, true), true] = changePermission(carpeta, init, true);
-                3. [term.getEntryIndx(1, true), false, true]] = changePermission(carpeta, init, false true);
+                1. [terminal.getEntryIndx(6)] = changePermission(archivo);
+                2. [terminal.getEntryIndx(1, true), true] = changePermission(carpeta, true);
+                3. [terminal.getEntryIndx(1, true), false, true]] = changePermission(carpeta, false true);
         */
 
         //  Itera cada uno de los elementos del conjunto que son igual a cada entrada a cambiar y sus opciones
         for (var i = 0; i < array.length; i++)
             switch (array[i].length) {
-                //  Si hubo una opción, será un «changePermission(entry, init, cVisible)»
+                //  Si hubo una opción, será un «changePermission(entry, cVisible)»
                 case 2:
-                    ml.changePermission(array[i][0], init, array[i][1]);
+                    ml.changePermission(array[i][0], array[i][1]);
                     break;
-                //  Si hubo dos opciones, será un «changePermission(entry, init, cVisible, cPermission)»
+                //  Si hubo dos opciones, será un «changePermission(entry, cVisible, cPermission)»
                 case 3:
-                    ml.changePermission(array[i][0], init, array[i][1], array[i][2]);
+                    ml.changePermission(array[i][0], array[i][1], array[i][2]);
                     break;
-                //  Si no hubo opciones, será un «changePermission(entry, init)»
+                //  Si no hubo opciones, será un «changePermission(entry)»
                 default:
-                    ml.changePermission(array[i][0], init);
+                    ml.changePermission(array[i][0]);
             }
+    },
+
+    //  Limpia los datos
+    clear: function () {
+        //  Si no se está en el directorio de inicio
+        if (localStorage.path != "~") {
+            //  Manda al directorio de inicio para evitar que se grave el timer
+            ml.term.typeCommand("cd ~");
+
+            //  Espera medio segundo para refrescar la página
+            setTimeout(function () {
+                ml.refresh();
+            }, 500);
+        }
+        else
+            ml.refresh();
+    },
+
+    //  Refresca la ventana
+    refresh: function () {
+        //  Limpia los datos locales
+        localStorage.clear();
+
+        //  Refresca la ventana
+        location.reload();
     }
 }
