@@ -20,15 +20,15 @@ el cuento o la novela, se busca habituar al usuario general con la sintaxis y el
 uso de la terminal.
 
 El objetivo de esto no es que los los usuarios abandonen las interfaces gráficas
-y empiecen a ser *hackers-ninjas*, sino algo más elemental: que nos familiaricemos
+y empiecen a ser *hacker-ninjas*, sino algo más elemental: que nos familiaricemos
 con las herramientas que ya forman parte de nuestro día a día; a saber, las tecnologías
 de la información.
 
 Desmitificando el ámbito informático como algo solo accesible para unos cuantos
-es como se desea contribuir para que el usuario/leyente por lo menos reflexione
-sobre su habitual carácter de consumidor de *hardware* y de *software*,
-fomentando así un proceso de empoderamiento ante algunas de las herramientas más
-importantes y menos comprendidas de la actualidad.
+es como CLIteratura desea contribuir a que el usuario/leyente por lo menos reflexione
+sobre su rol de consumidor de *hardware* y de *software*. Con esto se pretende fomentar
+un proceso de empoderamiento ante algunas de las herramientas más importantes y
+menos comprendidas de la actualidad.
 
 ## Lecciones
 
@@ -52,24 +52,24 @@ El núcleo de este proyecto es [jsterm](https://github.com/clarkduvall/jsterm),
 Learn the basics of the command-line interface with literature.
 
 CLIterature is a small project that aims to give a basic introduction to the command-line
-interface to the people who have little or no relationship with tech field.
+interface to the people who have little or no relationship with the tech field.
 
 By the contact with something more common, like literature writings, mainly stories
 or novels, is how it seeks to teach the sintaxis and use of the terminal.
 
-The purpose is not to sought the users to abandon the graphical interfaces and become
-hackers-ninjas. The intention is something simplier: familiarize us with the tools
-that are part of our daily life; namely, the information technology.
+The objective of this is not so that users leave the graphical interfaces and begin
+to be hacker-ninjas, but something more elementary: that we familiarize ourselves
+with the tools that are already a part of our day to day; namely, information technology.
 
-By debunking the tech field as something only accessible for a few people is how
-it contributes for the user/reader to ponder at least about their habitual character
-of hardware and software consumer and begin an empowerment process of some of the
-most important and less know tools of our time.
+Debunking the tech field as something only accessible for a few people is how CLIterature
+wants to contribute to the user / reader to at least reflect on their consumer role
+of hardware and software. This is intended to promote a process of empowerment to
+some of the most important and least understood tools today.
 
 ## Lessons
 
 1. “House Taken Over” by Julio Cortázar: Learn how to move between directories and
-how to see files contents.
+how to see file's content.
 
 ## Acknowledgment
 

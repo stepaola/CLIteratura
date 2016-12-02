@@ -15,8 +15,7 @@ var loc = {
                 => entry.contents_en || entry.contents si no existe la traducción
         */
 
-        if (lang == "es") {             //  CAMBIAR CAMBIAR CAMBIAR CAMBIAR CAMBIAR CAMBIAR
-            lang = "en";                //  BORRAR BORRAR BORRAR BORRAR BORRAR BORRAR BORRAR
+        if (lang != "es") {
             if (entry[key + "_" + lang] !== undefined)
                 return entry[key + "_" + lang];
             else
