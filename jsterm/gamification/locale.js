@@ -5,22 +5,19 @@ var loc = {
             key = str || "contents";
 
         /*
-            Por defecto el lenguaje es en español, cuya llave siempre tiene que ser «contents»,
-            si el SO está usando otro idioma, buscará la llave «contents_lang» donde «lang»
+            Por defecto el lenguaje es en español, cuya llave siempre tiene que ir sin coletilla,
+            si el SO está usando otro idioma, buscará la llave con la coletilla «_lang» donde «lang»
             es el elemento antes del guion de lo que arroja navigator.language.
 
             Por ejemplo:
                 navigator.language = en-US
                 lang = en
-                => entry.contents_en || entry.contents si no existe la traducción
+                => entry.key_en || entry.key si no existe la traducción
         */
 
-        if (lang != "es") {
-            if (entry[key + "_" + lang] !== undefined)
-                return entry[key + "_" + lang];
-            else
-                return entry[key];
-        } else
+        if (entry[key + "_" + lang] !== undefined)
+            return entry[key + "_" + lang];
+        else
             return entry[key];
     }
 }
