@@ -39,6 +39,11 @@ menos comprendidas de la actualidad.
 El núcleo de este proyecto es [jsterm](https://github.com/clarkduvall/jsterm),
 ¡gracias por compartir el código!
 
+## Licencia
+
+Continuando con lo estipulado por jsterm, no hay licencia y este contenido es abierto
+y libre, solo no olvides mencionar que proviene de jsterm.
+
 ---
 ---
 ---
@@ -75,3 +80,8 @@ how to see file's content.
 
 The kernel of this project is [jsterm](https://github.com/clarkduvall/jsterm), thanks
 for sharing the code!
+
+## License
+
+According to jsterm, there isn't any license and this content is open and free,
+just don't forget to mention that the origin is jsterm.
