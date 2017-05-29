@@ -34,6 +34,23 @@ menos comprendidas de la actualidad.
 
 1. «Casa tomada» de Julio Cortázar: Aprende a moverte entre ficheros y ver sus contenidos.
 
+## Como empezar
+
+1. Abre el terminar y clona el proyecto con el comando:
+```git clone https://github.com/NikaZhenya/CLIteratura.git
+```
+
+2. Entra en la carpeta CLIteratura con el comando:
+```cd CLIteratura
+```
+
+3. Abre el archivo index.html con el el comando:
+```open index.html
+```
+
+4. Listo! Ahora es solamente seguir las instrucciones en el navegador. :)
+
+
 ## Agradecimientos
 
 El núcleo de este proyecto es [jsterm](https://github.com/clarkduvall/jsterm),
