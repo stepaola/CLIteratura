@@ -32,33 +32,6 @@ sobre su rol de consumidor de *hardware* y de *software*. Con esto se pretende f
 un proceso de empoderamiento ante algunas de las herramientas más importantes y
 menos comprendidas de la actualidad.
 
-## Como empezar
-
-1. Abre el terminar y clona el proyecto con el comando:
-
-```
-git clone https://github.com/NikaZhenya/CLIteratura.git
-
-```
-
-2. Entra en la carpeta CLIteratura con el comando:
-
-```
-cd CLIteratura
-
-```
-
-3. Abre el archivo index.html con el comando:
-
-```
-open index.html
-
-```
-
-4. Estás listx para las lecciones! Ahora es solamente seguir las instrucciones en el navegador. :)
-
-Obs: También puedes descargar la carpeta en "Download" y luego abrir en archivo index.html en el navegador que ocupas en tu ordenador.
-
 ## Lecciones
 
 1. «Casa tomada» de Julio Cortázar: Aprende a moverte entre ficheros y ver sus contenidos.
